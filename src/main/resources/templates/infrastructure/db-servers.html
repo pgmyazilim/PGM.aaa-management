@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>DB Sunucuları - AAA Yönetim</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div th:replace="~{layout/sidebar :: sidebar('infrastructure')}"></div>
+    <main class="flex-1 overflow-y-auto p-6">
+        <div class="flex items-center gap-4 mb-5">
+            <div class="flex gap-2 text-sm">
+                <a th:href="@{/infrastructure/projects}" class="px-3 py-1 border rounded hover:bg-slate-100">Projeler</a>
+                <a th:href="@{/infrastructure/modules}" class="px-3 py-1 border rounded hover:bg-slate-100">Modüller</a>
+                <a th:href="@{/infrastructure/clients}" class="px-3 py-1 border rounded hover:bg-slate-100">İstemciler</a>
+                <a th:href="@{/infrastructure/db-servers}" class="px-3 py-1 bg-slate-800 text-white rounded">DB Sunucuları</a>
+            </div>
+            <div class="ml-auto">
+                <a th:href="@{/infrastructure/db-servers/new}"
+                   class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">+ Yeni Sunucu</a>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-slate-800 text-white">
+                <tr>
+                    <th class="px-4 py-3 text-left">Hostname</th>
+                    <th class="px-4 py-3 text-left">IP Adresi</th>
+                    <th class="px-4 py-3 text-left">Port</th>
+                    <th class="px-4 py-3 text-left">Sürüm</th>
+                    <th class="px-4 py-3 text-center">İşlem</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="s, stat : ${servers.content}"
+                    th:classappend="${stat.odd} ? 'bg-white' : 'bg-slate-50'"
+                    class="border-b border-slate-100">
+                    <td class="px-4 py-2 font-mono text-sm" th:text="${s.serverHostname} ?: '—'">host</td>
+                    <td class="px-4 py-2 font-mono text-xs text-slate-500" th:text="${s.serverIpAddress} ?: '—'">—</td>
+                    <td class="px-4 py-2 text-xs text-slate-500" th:text="${s.serverPort} ?: '—'">—</td>
+                    <td class="px-4 py-2 text-xs text-slate-500" th:text="${s.version} ?: '—'">—</td>
+                    <td class="px-4 py-2 text-center space-x-2">
+                        <a th:href="@{/infrastructure/db-servers/{id}/edit(id=${s.databaseServerId})}"
+                           class="text-blue-600 hover:underline text-xs">Düzenle / Kimlik Bilgileri</a>
+                        <form th:action="@{/infrastructure/db-servers/{id}/delete(id=${s.databaseServerId})}" method="post"
+                              class="inline" onsubmit="return confirm('Silinsin mi?')">
+                            <button type="submit" class="text-red-500 hover:underline text-xs">Sil</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${servers.content.empty}">
+                    <td colspan="5" class="px-4 py-8 text-center text-slate-400">Sunucu bulunamadı.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+</body>
+</html>

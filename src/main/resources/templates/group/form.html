@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Grup Formu - AAA Yönetim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div th:replace="~{layout/sidebar :: sidebar('groups')}"></div>
+    <main class="flex-1 overflow-y-auto p-6">
+        <div class="max-w-lg mx-auto">
+            <div class="flex items-center gap-3 mb-6">
+                <a th:href="@{/groups}" class="text-slate-500 hover:text-slate-700 text-sm">← Gruplar</a>
+                <h1 class="text-xl font-bold text-slate-800"
+                    th:text="${group.userGroupId != null} ? 'Grup Düzenle' : 'Yeni Grup'">Grup</h1>
+            </div>
+            <form th:action="@{/groups/save}" method="post"
+                  class="bg-white rounded-lg shadow p-6 space-y-4">
+                <input type="hidden" name="userGroupId" th:value="${group.userGroupId}"/>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Grup Adı *</label>
+                    <input type="text" name="name" th:value="${group.name}" required
+                           class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Açıklama</label>
+                    <textarea name="description" rows="3" th:text="${group.description}"
+                              class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"></textarea>
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button type="submit"
+                            class="bg-blue-600 text-white px-6 py-2 rounded text-sm hover:bg-blue-700">Kaydet</button>
+                    <a th:href="@{/groups}" class="px-6 py-2 rounded text-sm border border-slate-300 hover:bg-slate-50">İptal</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+</body>
+</html>

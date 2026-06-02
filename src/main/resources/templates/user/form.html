@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Kullanıcı Formu - AAA Yönetim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div th:replace="~{layout/sidebar :: sidebar('users')}"></div>
+    <main class="flex-1 overflow-y-auto p-6">
+        <div class="max-w-2xl mx-auto">
+            <div class="flex items-center gap-3 mb-6">
+                <a th:href="@{/users}" class="text-slate-500 hover:text-slate-700 text-sm">← Kullanıcılar</a>
+                <h1 class="text-xl font-bold text-slate-800"
+                    th:text="${user.userId != null} ? 'Kullanıcı Düzenle' : 'Yeni Kullanıcı'">Kullanıcı</h1>
+            </div>
+            <form th:action="@{/users/save}" method="post"
+                  class="bg-white rounded-lg shadow p-6 space-y-4">
+                <input type="hidden" name="userId" th:value="${user.userId}"/>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Ad *</label>
+                        <input type="text" name="firstName" th:value="${user.firstName}" required
+                               class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Soyad *</label>
+                        <input type="text" name="lastName" th:value="${user.lastName}" required
+                               class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">İkinci Ad</label>
+                        <input type="text" name="middleName" th:value="${user.middleName}"
+                               class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Kullanıcı Adı *</label>
+                        <input type="text" name="username" th:value="${user.username}" required
+                               class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">E-posta (Kullanıcı)</label>
+                        <input type="text" name="emailUser" th:value="${user.emailUser}"
+                               class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">E-posta (Domain)</label>
+                        <input type="text" name="emailDomain" th:value="${user.emailDomain}"
+                               class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Sicil No</label>
+                        <input type="text" name="badgeNo" th:value="${user.badgeNo}"
+                               class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Kimlik No</label>
+                        <input type="text" name="idNo" th:value="${user.idNo}"
+                               class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Parola Hash *</label>
+                        <input type="text" name="passwordHash" th:value="${user.passwordHash}"
+                               th:required="${user.userId == null}"
+                               class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Karşılama Mesajı</label>
+                        <input type="text" name="welcomeMessage" th:value="${user.welcomeMessage}"
+                               class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-4 pt-2">
+                    <label class="flex items-center gap-2 text-sm cursor-pointer">
+                        <input type="checkbox" name="active" value="true" th:checked="${user.active}"
+                               class="accent-green-500 w-4 h-4"/> Aktif
+                    </label>
+                    <label class="flex items-center gap-2 text-sm cursor-pointer">
+                        <input type="checkbox" name="superUser" value="true" th:checked="${user.superUser}"
+                               class="accent-yellow-500 w-4 h-4"/> Süper Kullanıcı
+                    </label>
+                    <label class="flex items-center gap-2 text-sm cursor-pointer">
+                        <input type="checkbox" name="alwaysUseOtp" value="true" th:checked="${user.alwaysUseOtp}"
+                               class="accent-blue-500 w-4 h-4"/> Her Zaman OTP
+                    </label>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="submit"
+                            class="bg-blue-600 text-white px-6 py-2 rounded text-sm hover:bg-blue-700">Kaydet</button>
+                    <a th:href="@{/users}" class="px-6 py-2 rounded text-sm border border-slate-300 hover:bg-slate-50">İptal</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+</body>
+</html>

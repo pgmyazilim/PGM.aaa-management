@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Kısıt Formu - AAA Yönetim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div th:replace="~{layout/sidebar :: sidebar('constraints')}"></div>
+    <main class="flex-1 overflow-y-auto p-6">
+        <div class="max-w-2xl mx-auto space-y-6">
+            <div class="flex items-center gap-3">
+                <a th:href="@{/constraints}" class="text-slate-500 hover:text-slate-700 text-sm">← Kısıtlar</a>
+                <h1 class="text-xl font-bold text-slate-800"
+                    th:text="${constraint.actionConstraintId != null} ? 'Kısıt Düzenle' : 'Yeni Kısıt'">Kısıt</h1>
+            </div>
+
+            <!-- Main Form -->
+            <form th:action="@{/constraints/save}" method="post"
+                  class="bg-white rounded-lg shadow p-6 space-y-4">
+                <input type="hidden" name="actionConstraintId" th:value="${constraint.actionConstraintId}"/>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Kısıt Adı *</label>
+                        <input type="text" name="name" th:value="${constraint.name}" required
+                               class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">İşlem *</label>
+                        <select name="action.actionId" required
+                                class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            <option value="">— Seçin —</option>
+                            <option th:each="a : ${actions}"
+                                    th:value="${a.actionId}"
+                                    th:text="${a.name}"
+                                    th:selected="${constraint.action != null && constraint.action.actionId == a.actionId}">İşlem</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">ConstraintKey *</label>
+                        <input type="text" name="constraintKey" th:value="${constraint.constraintKey}" required
+                               class="w-full border border-slate-300 rounded px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Operatör</label>
+                        <select name="operator"
+                                class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            <option value="">— Seçin —</option>
+                            <option th:each="op : ${operators}"
+                                    th:value="${op.name()}"
+                                    th:text="${op.name()}"
+                                    th:selected="${constraint.operator == op}">op</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Açıklama</label>
+                    <textarea name="description" rows="2" th:text="${constraint.description}"
+                              class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"></textarea>
+                </div>
+                <label class="flex items-center gap-2 text-sm cursor-pointer">
+                    <input type="checkbox" name="operatorNegated" value="true"
+                           th:checked="${constraint.operatorNegated}"
+                           class="accent-red-500 w-4 h-4"/> Operatörü Olumsuzla (NOT)
+                </label>
+                <div class="flex gap-3 pt-2">
+                    <button type="submit"
+                            class="bg-blue-600 text-white px-6 py-2 rounded text-sm hover:bg-blue-700">Kaydet</button>
+                    <a th:href="@{/constraints}" class="px-6 py-2 rounded text-sm border border-slate-300 hover:bg-slate-50">İptal</a>
+                </div>
+            </form>
+
+            <!-- Group Values (only on edit) -->
+            <div th:if="${constraint.actionConstraintId != null}" class="bg-white rounded-lg shadow p-6">
+                <h2 class="font-semibold text-slate-700 mb-4">Grup Değerleri</h2>
+                <table th:if="${!groupValues.empty}" class="w-full text-sm mb-4">
+                    <thead class="bg-slate-100">
+                    <tr>
+                        <th class="px-3 py-2 text-left">Grup</th>
+                        <th class="px-3 py-2 text-left">Değer Listesi</th>
+                        <th class="px-3 py-2 text-left">Ayraç</th>
+                        <th class="px-3 py-2 text-center">İşlem</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="gv : ${groupValues}" class="border-b border-slate-100">
+                        <td class="px-3 py-2" th:text="${gv.userGroup.name}">Grup</td>
+                        <td class="px-3 py-2 font-mono text-xs"
+                            th:text="${#strings.abbreviate(gv.valueList, 40)}">—</td>
+                        <td class="px-3 py-2 text-xs text-slate-500" th:text="${gv.valueDelimiter} ?: '—'">—</td>
+                        <td class="px-3 py-2 text-center">
+                            <form th:action="@{/constraints/group-values/{vid}/delete(vid=${gv.actionConstraintGroupValueId})}"
+                                  method="post" class="inline"
+                                  onsubmit="return confirm('Silinsin mi?')">
+                                <input type="hidden" name="constraintId" th:value="${constraint.actionConstraintId}"/>
+                                <button type="submit" class="text-red-500 hover:underline text-xs">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <form th:action="@{/constraints/{id}/group-values/upsert(id=${constraint.actionConstraintId})}"
+                      method="post" class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Grup *</label>
+                        <select name="groupId" required
+                                class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            <option value="">— Seçin —</option>
+                            <option th:each="g : ${allGroups}" th:value="${g.userGroupId}" th:text="${g.name}">Grup</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Değer Listesi *</label>
+                        <input type="text" name="valueList" required
+                               class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Ayraç</label>
+                        <input type="text" name="valueDelimiter"
+                               class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Değerler Mantıksal Op.</label>
+                        <select name="valuesLogicalOperator"
+                                class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            <option value="">—</option>
+                            <option value="AND">AND</option>
+                            <option value="OR">OR</option>
+                        </select>
+                    </div>
+                    <div class="col-span-2">
+                        <button type="submit"
+                                class="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700">Grup Değeri Ekle / Güncelle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

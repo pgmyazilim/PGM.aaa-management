@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Kısıtlar - AAA Yönetim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div th:replace="~{layout/sidebar :: sidebar('constraints')}"></div>
+    <main class="flex-1 overflow-y-auto p-6">
+        <div class="flex justify-between items-center mb-5">
+            <h1 class="text-xl font-bold text-slate-800">Kısıtlar</h1>
+            <a th:href="@{/constraints/new}"
+               class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">+ Yeni Kısıt</a>
+        </div>
+        <form method="get" th:action="@{/constraints}" class="mb-4 flex flex-wrap gap-2 items-center">
+            <select name="actionId"
+                    class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+                <option value="">— Tüm İşlemler —</option>
+                <option th:each="a : ${actions}"
+                        th:value="${a.actionId}"
+                        th:text="${a.name}"
+                        th:selected="${a.actionId == selectedActionId}">İşlem</option>
+            </select>
+            <input type="text" name="search" th:value="${search}"
+                   placeholder="Kısıt adı ara..."
+                   class="border border-slate-300 rounded px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+            <button type="submit" class="bg-slate-700 text-white px-4 py-2 rounded text-sm hover:bg-slate-800">Ara</button>
+            <a th:href="@{/constraints}" class="px-4 py-2 text-sm text-slate-500 hover:text-slate-700">Temizle</a>
+        </form>
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-slate-800 text-white">
+                <tr>
+                    <th class="px-4 py-3 text-left">Kısıt Adı</th>
+                    <th class="px-4 py-3 text-left">İşlem</th>
+                    <th class="px-4 py-3 text-left">Operatör</th>
+                    <th class="px-4 py-3 text-center">Negatif</th>
+                    <th class="px-4 py-3 text-center">İşlem</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="c, stat : ${constraints.content}"
+                    th:classappend="${stat.odd} ? 'bg-white' : 'bg-slate-50'"
+                    class="border-b border-slate-100">
+                    <td class="px-4 py-2 font-medium" th:text="${c.name}">Kısıt</td>
+                    <td class="px-4 py-2 text-slate-600" th:text="${c.action.name}">İşlem</td>
+                    <td class="px-4 py-2">
+                        <span class="font-mono text-xs bg-slate-100 px-2 py-0.5 rounded"
+                              th:text="${c.operator}">equals</span>
+                    </td>
+                    <td class="px-4 py-2 text-center">
+                        <span th:if="${c.operatorNegated}" class="text-red-500 font-bold">NOT</span>
+                        <span th:unless="${c.operatorNegated}" class="text-slate-300">—</span>
+                    </td>
+                    <td class="px-4 py-2 text-center space-x-2">
+                        <a th:href="@{/constraints/{id}/edit(id=${c.actionConstraintId})}"
+                           class="text-blue-600 hover:underline text-xs">Düzenle</a>
+                        <form th:action="@{/constraints/{id}/delete(id=${c.actionConstraintId})}" method="post"
+                              class="inline"
+                              onsubmit="return confirm('Bu kısıtı silmek istediğinize emin misiniz?')">
+                            <button type="submit" class="text-red-500 hover:underline text-xs">Sil</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${constraints.content.empty}">
+                    <td colspan="5" class="px-4 py-8 text-center text-slate-400">Kısıt bulunamadı.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+</body>
+</html>

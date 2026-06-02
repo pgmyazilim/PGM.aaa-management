@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Yetki Matrisi - AAA Yönetim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+</head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div th:replace="~{layout/sidebar :: sidebar('permissions')}"></div>
+    <main class="flex-1 overflow-y-auto p-6">
+        <h1 class="text-xl font-bold text-slate-800 mb-5">Yetki Matrisi</h1>
+
+        <!-- Filters -->
+        <form method="get" th:action="@{/permissions}" class="mb-5 flex flex-wrap gap-3 items-end">
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Grup</label>
+                <select name="groupId"
+                        class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    <option value="">— Grup seçin —</option>
+                    <option th:each="g : ${groups}"
+                            th:value="${g.userGroupId}"
+                            th:text="${g.name}"
+                            th:selected="${g.userGroupId == selectedGroupId}">Grup</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Modül</label>
+                <select name="moduleId"
+                        class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    <option value="">— Tüm Modüller —</option>
+                    <option th:each="m : ${modules}"
+                            th:value="${m.moduleId}"
+                            th:text="${m.name}"
+                            th:selected="${m.moduleId == selectedModuleId}">Modül</option>
+                </select>
+            </div>
+            <button type="submit"
+                    class="bg-slate-700 text-white px-4 py-2 rounded text-sm hover:bg-slate-800">Filtrele</button>
+        </form>
+
+        <!-- Matrix Table -->
+        <div th:if="${selectedGroupId != null}" class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-slate-800 text-white">
+                <tr>
+                    <th class="px-4 py-3 text-left w-1/3">İşlem Adı</th>
+                    <th class="px-4 py-3 text-left w-1/6">Modül</th>
+                    <th class="px-4 py-3 text-center w-24">İzin Var</th>
+                    <th class="px-4 py-3 text-center">Son Güncelleme</th>
+                    <th class="px-4 py-3 text-center">Süre Sonu</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="perm, stat : ${permissions}"
+                    th:classappend="${stat.odd} ? 'bg-white' : 'bg-slate-50'"
+                    class="border-b border-slate-100">
+                    <td class="px-4 py-2 font-medium" th:text="${perm.action.name}">İşlem</td>
+                    <td class="px-4 py-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded"
+                              th:text="${perm.action.module.name}">Modül</span>
+                    </td>
+                    <td class="px-4 py-2 text-center">
+                        <input type="checkbox"
+                               th:checked="${perm.allowed}"
+                               th:attr="hx-post=@{/permissions/toggle}, hx-vals='js:{actionId: ' + ${perm.action.actionId} + ', groupId: ' + ${perm.userGroup.userGroupId} + '}'"
+                               hx-trigger="change"
+                               hx-swap="none"
+                               class="w-5 h-5 accent-green-500 cursor-pointer"/>
+                    </td>
+                    <td class="px-4 py-2 text-center text-xs text-slate-500"
+                        th:text="${perm.rowVersionUtc != null} ? ${#temporals.format(perm.rowVersionUtc, 'dd.MM.yyyy')} : '—'">—</td>
+                    <td class="px-4 py-2 text-center text-xs"
+                        th:classappend="${perm.expiresAtUtc != null} ? 'text-orange-500 font-medium' : 'text-slate-400'"
+                        th:text="${perm.expiresAtUtc != null} ? ${#temporals.format(perm.expiresAtUtc, 'dd.MM.yyyy')} : '—'">—</td>
+                </tr>
+                <tr th:if="${permissions.empty}">
+                    <td colspan="5" class="px-4 py-8 text-center text-slate-400">
+                        Bu grup için henüz yetki tanımlanmamış.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:unless="${selectedGroupId != null}"
+             class="bg-white rounded-lg shadow p-12 text-center text-slate-400">
+            Yetki matrisini görüntülemek için lütfen bir grup seçin.
+        </div>
+    </main>
+</div>
+</body>
+</html>

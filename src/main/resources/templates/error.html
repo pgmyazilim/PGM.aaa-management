@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hata - AAA Yönetim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div th:replace="~{layout/sidebar :: sidebar('error')}"></div>
+    <main class="flex-1 overflow-y-auto p-8">
+        <div class="max-w-lg mx-auto mt-16 bg-white rounded-lg shadow p-8 text-center">
+            <div class="text-5xl mb-4">⚠️</div>
+            <h1 class="text-xl font-bold text-red-600 mb-2" th:text="${errorTitle} ?: 'Hata'">Hata</h1>
+            <p class="text-slate-600" th:text="${errorMessage} ?: 'Bir hata oluştu.'">Bir hata oluştu.</p>
+            <a th:href="@{/}" class="mt-6 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Ana Sayfaya Dön
+            </a>
+        </div>
+    </main>
+</div>
+</body>
+</html>

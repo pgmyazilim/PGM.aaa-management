@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Kullanıcılar - AAA Yönetim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+    <style>
+        .slide-panel { transform: translateX(100%); transition: transform 0.25s ease-in-out; }
+        .slide-panel.open { transform: translateX(0); }
+    </style>
+</head>
+<body class="bg-gray-50">
+<div class="flex h-screen overflow-hidden">
+    <div th:replace="~{layout/sidebar :: sidebar('users')}"></div>
+    <main class="flex-1 overflow-y-auto p-6 relative">
+        <div class="flex justify-between items-center mb-5">
+            <h1 class="text-xl font-bold text-slate-800">Kullanıcılar</h1>
+            <a th:href="@{/users/new}"
+               class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">+ Yeni Kullanıcı</a>
+        </div>
+
+        <!-- Search -->
+        <form method="get" th:action="@{/users}" class="mb-4 flex gap-2">
+            <input type="text" name="search" th:value="${search}"
+                   placeholder="Ad, soyad veya kullanıcı adı ara..."
+                   class="border border-slate-300 rounded px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+            <button type="submit"
+                    class="bg-slate-700 text-white px-4 py-2 rounded text-sm hover:bg-slate-800">Ara</button>
+            <a th:href="@{/users}" class="px-4 py-2 text-sm text-slate-500 hover:text-slate-700">Temizle</a>
+        </form>
+
+        <!-- Table -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-slate-800 text-white">
+                <tr>
+                    <th class="px-4 py-3 text-left">Ad Soyad</th>
+                    <th class="px-4 py-3 text-left">Kullanıcı Adı</th>
+                    <th class="px-4 py-3 text-center">Aktif</th>
+                    <th class="px-4 py-3 text-center">Süper Kullanıcı</th>
+                    <th class="px-4 py-3 text-center">İşlem</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user, stat : ${users.content}"
+                    th:classappend="${stat.odd} ? 'bg-white' : 'bg-slate-50'"
+                    class="border-b border-slate-100">
+                    <td class="px-4 py-2 font-medium" th:text="${user.fullName}">Ad Soyad</td>
+                    <td class="px-4 py-2 text-slate-600" th:text="${user.username}">kullanici</td>
+                    <td class="px-4 py-2 text-center">
+                        <span th:if="${user.active}" class="text-green-600 font-bold">✓</span>
+                        <span th:unless="${user.active}" class="text-red-400">✗</span>
+                    </td>
+                    <td class="px-4 py-2 text-center">
+                        <span th:if="${user.superUser}" class="text-yellow-500 font-bold">★</span>
+                        <span th:unless="${user.superUser}" class="text-slate-300">—</span>
+                    </td>
+                    <td class="px-4 py-2 text-center space-x-2">
+                        <a th:href="@{/users/{id}/edit(id=${user.userId})}"
+                           class="text-blue-600 hover:underline text-xs">Düzenle</a>
+                        <button th:attr="hx-get=@{/users/{id}/groups(id=${user.userId})}"
+                                hx-target="#group-panel-container"
+                                hx-swap="innerHTML"
+                                onclick="openPanel()"
+                                class="text-indigo-600 hover:underline text-xs cursor-pointer">Gruplar</button>
+                        <form th:action="@{/users/{id}/delete(id=${user.userId})}" method="post"
+                              class="inline"
+                              onsubmit="return confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?')">
+                            <button type="submit" class="text-red-500 hover:underline text-xs">Sil</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${users.content.empty}">
+                    <td colspan="5" class="px-4 py-8 text-center text-slate-400">Kullanıcı bulunamadı.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div th:if="${users.totalPages > 1}" class="flex gap-1 mt-4 text-sm">
+            <a th:if="${!users.first}"
+               th:href="@{/users(page=${users.number - 1}, search=${search})}"
+               class="px-3 py-1 border rounded hover:bg-slate-100">«</a>
+            <span th:each="i : ${#numbers.sequence(0, users.totalPages - 1)}">
+                <a th:href="@{/users(page=${i}, search=${search})}"
+                   th:text="${i + 1}"
+                   th:classappend="${i == users.number} ? 'bg-blue-600 text-white' : 'hover:bg-slate-100'"
+                   class="px-3 py-1 border rounded">1</a>
+            </span>
+            <a th:if="${!users.last}"
+               th:href="@{/users(page=${users.number + 1}, search=${search})}"
+               class="px-3 py-1 border rounded hover:bg-slate-100">»</a>
+        </div>
+    </main>
+
+    <!-- Sliding Group Panel Overlay -->
+    <div id="panel-overlay"
+         class="hidden fixed inset-0 bg-black bg-opacity-30 z-40"
+         onclick="closePanel()"></div>
+    <aside id="group-side-panel"
+           class="slide-panel fixed top-0 right-0 w-80 h-full bg-white shadow-2xl z-50 overflow-y-auto">
+        <div id="group-panel-container"></div>
+    </aside>
+</div>
+
+<script>
+    function openPanel() {
+        document.getElementById('panel-overlay').classList.remove('hidden');
+        setTimeout(() => document.getElementById('group-side-panel').classList.add('open'), 10);
+    }
+    function closePanel() {
+        document.getElementById('group-side-panel').classList.remove('open');
+        document.getElementById('panel-overlay').classList.add('hidden');
+    }
+</script>
+</body>
+</html>

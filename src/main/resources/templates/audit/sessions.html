@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Oturumlar - AAA Yönetim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div th:replace="~{layout/sidebar :: sidebar('sessions')}"></div>
+    <main class="flex-1 overflow-y-auto p-6">
+        <h1 class="text-xl font-bold text-slate-800 mb-5">Oturumlar</h1>
+        <form method="get" th:action="@{/audit/sessions}" class="mb-4 flex flex-wrap gap-2 items-center">
+            <select name="open"
+                    class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none">
+                <option value="">— Tüm Oturumlar —</option>
+                <option value="true">Açık</option>
+                <option value="false">Kapalı</option>
+            </select>
+            <input type="datetime-local" name="from"
+                   class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none"/>
+            <input type="datetime-local" name="to"
+                   class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none"/>
+            <button type="submit" class="bg-slate-700 text-white px-4 py-2 rounded text-sm hover:bg-slate-800">Filtrele</button>
+            <a th:href="@{/audit/sessions}" class="px-4 py-2 text-sm text-slate-500 hover:text-slate-700">Temizle</a>
+        </form>
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-slate-800 text-white">
+                <tr>
+                    <th class="px-4 py-3 text-left">ID</th>
+                    <th class="px-4 py-3 text-left">Kullanıcı</th>
+                    <th class="px-4 py-3 text-center">Durum</th>
+                    <th class="px-4 py-3 text-left">Açıldı (UTC)</th>
+                    <th class="px-4 py-3 text-left">Kapatıldı (UTC)</th>
+                    <th class="px-4 py-3 text-left">IP Adresi</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="s, stat : ${sessions.content}"
+                    th:classappend="${stat.odd} ? 'bg-white' : 'bg-slate-50'"
+                    class="border-b border-slate-100">
+                    <td class="px-4 py-2 font-mono text-xs text-slate-400" th:text="${s.sessionId}">0</td>
+                    <td class="px-4 py-2" th:text="${s.user.fullName}">Kullanıcı</td>
+                    <td class="px-4 py-2 text-center">
+                        <span th:if="${s.open}" class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded">Açık</span>
+                        <span th:unless="${s.open}" class="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded">Kapalı</span>
+                    </td>
+                    <td class="px-4 py-2 text-xs text-slate-500"
+                        th:text="${#temporals.format(s.openedAtUtc, 'dd.MM.yyyy HH:mm')}">—</td>
+                    <td class="px-4 py-2 text-xs text-slate-500"
+                        th:text="${s.closedAtUtc != null} ? ${#temporals.format(s.closedAtUtc, 'dd.MM.yyyy HH:mm')} : '—'">—</td>
+                    <td class="px-4 py-2 font-mono text-xs" th:text="${s.clientIpAddress} ?: '—'">—</td>
+                </tr>
+                <tr th:if="${sessions.content.empty}">
+                    <td colspan="6" class="px-4 py-8 text-center text-slate-400">Oturum bulunamadı.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${sessions.totalPages > 1}" class="flex gap-1 mt-4 text-sm">
+            <a th:if="${!sessions.first}" th:href="@{/audit/sessions(page=${sessions.number - 1})}"
+               class="px-3 py-1 border rounded hover:bg-slate-100">«</a>
+            <span class="px-3 py-1 text-slate-500"
+                  th:text="${sessions.number + 1} + ' / ' + ${sessions.totalPages}">1/1</span>
+            <a th:if="${!sessions.last}" th:href="@{/audit/sessions(page=${sessions.number + 1})}"
+               class="px-3 py-1 border rounded hover:bg-slate-100">»</a>
+        </div>
+    </main>
+</div>
+</body>
+</html>

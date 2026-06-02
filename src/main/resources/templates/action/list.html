@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>İşlemler - AAA Yönetim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div th:replace="~{layout/sidebar :: sidebar('actions')}"></div>
+    <main class="flex-1 overflow-y-auto p-6">
+        <div class="flex justify-between items-center mb-5">
+            <h1 class="text-xl font-bold text-slate-800">İşlemler</h1>
+            <a th:href="@{/actions/new}"
+               class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">+ Yeni İşlem</a>
+        </div>
+        <form method="get" th:action="@{/actions}" class="mb-4 flex flex-wrap gap-2 items-center">
+            <select name="moduleId"
+                    class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+                <option value="">— Tüm Modüller —</option>
+                <option th:each="m : ${modules}"
+                        th:value="${m.moduleId}"
+                        th:text="${m.name}"
+                        th:selected="${m.moduleId == selectedModuleId}">Modül</option>
+            </select>
+            <input type="text" name="search" th:value="${search}"
+                   placeholder="İşlem adı veya anahtar ara..."
+                   class="border border-slate-300 rounded px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+            <button type="submit" class="bg-slate-700 text-white px-4 py-2 rounded text-sm hover:bg-slate-800">Ara</button>
+            <a th:href="@{/actions}" class="px-4 py-2 text-sm text-slate-500 hover:text-slate-700">Temizle</a>
+        </form>
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-slate-800 text-white">
+                <tr>
+                    <th class="px-4 py-3 text-left">İşlem Adı</th>
+                    <th class="px-4 py-3 text-left">Modül</th>
+                    <th class="px-4 py-3 text-left">ActionKey</th>
+                    <th class="px-4 py-3 text-center">Aktif</th>
+                    <th class="px-4 py-3 text-center">Yetki Gerekir</th>
+                    <th class="px-4 py-3 text-center">İşlem</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="action, stat : ${actions.content}"
+                    th:classappend="${stat.odd} ? 'bg-white' : 'bg-slate-50'"
+                    class="border-b border-slate-100">
+                    <td class="px-4 py-2 font-medium" th:text="${action.name}">İşlem</td>
+                    <td class="px-4 py-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded"
+                              th:text="${action.module.name}">Modül</span>
+                    </td>
+                    <td class="px-4 py-2 text-slate-500 font-mono text-xs" th:text="${action.actionKey}">key</td>
+                    <td class="px-4 py-2 text-center">
+                        <span th:if="${action.active}" class="text-green-600 font-bold">✓</span>
+                        <span th:unless="${action.active}" class="text-red-400">✗</span>
+                    </td>
+                    <td class="px-4 py-2 text-center">
+                        <span th:if="${action.requiresAuthorization}" class="text-orange-500 font-bold">🔒</span>
+                        <span th:unless="${action.requiresAuthorization}" class="text-slate-300">—</span>
+                    </td>
+                    <td class="px-4 py-2 text-center space-x-2">
+                        <a th:href="@{/actions/{id}/edit(id=${action.actionId})}"
+                           class="text-blue-600 hover:underline text-xs">Düzenle</a>
+                        <a th:href="@{/constraints(actionId=${action.actionId})}"
+                           class="text-indigo-600 hover:underline text-xs">Kısıtlar</a>
+                        <form th:action="@{/actions/{id}/delete(id=${action.actionId})}" method="post"
+                              class="inline"
+                              onsubmit="return confirm('Bu işlemi silmek istediğinize emin misiniz?')">
+                            <button type="submit" class="text-red-500 hover:underline text-xs">Sil</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${actions.content.empty}">
+                    <td colspan="6" class="px-4 py-8 text-center text-slate-400">İşlem bulunamadı.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${actions.totalPages > 1}" class="flex gap-1 mt-4 text-sm">
+            <a th:if="${!actions.first}"
+               th:href="@{/actions(page=${actions.number - 1}, search=${search}, moduleId=${selectedModuleId})}"
+               class="px-3 py-1 border rounded hover:bg-slate-100">«</a>
+            <span th:each="i : ${#numbers.sequence(0, actions.totalPages - 1)}">
+                <a th:href="@{/actions(page=${i}, search=${search}, moduleId=${selectedModuleId})}"
+                   th:text="${i + 1}"
+                   th:classappend="${i == actions.number} ? 'bg-blue-600 text-white' : 'hover:bg-slate-100'"
+                   class="px-3 py-1 border rounded">1</a>
+            </span>
+            <a th:if="${!actions.last}"
+               th:href="@{/actions(page=${actions.number + 1}, search=${search}, moduleId=${selectedModuleId})}"
+               class="px-3 py-1 border rounded hover:bg-slate-100">»</a>
+        </div>
+    </main>
+</div>
+</body>
+</html>

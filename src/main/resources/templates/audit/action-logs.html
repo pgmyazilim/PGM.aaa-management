@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Aksiyon Logları - AAA Yönetim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div th:replace="~{layout/sidebar :: sidebar('action-logs')}"></div>
+    <main class="flex-1 overflow-y-auto p-6">
+        <h1 class="text-xl font-bold text-slate-800 mb-5">Aksiyon Logları</h1>
+        <form method="get" th:action="@{/audit/action-logs}" class="mb-4 flex flex-wrap gap-2 items-center">
+            <select name="success"
+                    class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none">
+                <option value="">— Tümü —</option>
+                <option value="true">Başarılı</option>
+                <option value="false">Başarısız</option>
+            </select>
+            <input type="datetime-local" name="from"
+                   class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none"/>
+            <input type="datetime-local" name="to"
+                   class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none"/>
+            <button type="submit" class="bg-slate-700 text-white px-4 py-2 rounded text-sm hover:bg-slate-800">Filtrele</button>
+            <a th:href="@{/audit/action-logs}" class="px-4 py-2 text-sm text-slate-500 hover:text-slate-700">Temizle</a>
+        </form>
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-slate-800 text-white">
+                <tr>
+                    <th class="px-4 py-3 text-left">ID</th>
+                    <th class="px-4 py-3 text-left">İşlem</th>
+                    <th class="px-4 py-3 text-center">Sonuç</th>
+                    <th class="px-4 py-3 text-left">Tarih (UTC)</th>
+                    <th class="px-4 py-3 text-left">Not</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="log, stat : ${logs.content}"
+                    th:classappend="${stat.odd} ? 'bg-white' : 'bg-slate-50'"
+                    class="border-b border-slate-100">
+                    <td class="px-4 py-2 text-slate-400 font-mono text-xs" th:text="${log.actionLogId}">0</td>
+                    <td class="px-4 py-2" th:text="${log.action.name}">İşlem</td>
+                    <td class="px-4 py-2 text-center">
+                        <span th:if="${log.success}" class="text-green-600 font-bold text-xs">✓ Başarılı</span>
+                        <span th:unless="${log.success}" class="text-red-500 font-bold text-xs">✗ Başarısız</span>
+                    </td>
+                    <td class="px-4 py-2 text-xs text-slate-500"
+                        th:text="${#temporals.format(log.occurredAtUtc, 'dd.MM.yyyy HH:mm:ss')}">—</td>
+                    <td class="px-4 py-2 text-xs text-slate-500"
+                        th:text="${#strings.abbreviate(log.userNote, 60)} ?: '—'">—</td>
+                </tr>
+                <tr th:if="${logs.content.empty}">
+                    <td colspan="5" class="px-4 py-8 text-center text-slate-400">Log bulunamadı.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${logs.totalPages > 1}" class="flex gap-1 mt-4 text-sm">
+            <a th:if="${!logs.first}" th:href="@{/audit/action-logs(page=${logs.number - 1})}"
+               class="px-3 py-1 border rounded hover:bg-slate-100">«</a>
+            <span class="px-3 py-1 text-slate-500"
+                  th:text="${logs.number + 1} + ' / ' + ${logs.totalPages}">1/1</span>
+            <a th:if="${!logs.last}" th:href="@{/audit/action-logs(page=${logs.number + 1})}"
+               class="px-3 py-1 border rounded hover:bg-slate-100">»</a>
+        </div>
+    </main>
+</div>
+</body>
+</html>

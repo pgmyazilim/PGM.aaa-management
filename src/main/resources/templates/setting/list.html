@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ayarlar - AAA Yönetim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div th:replace="~{layout/sidebar :: sidebar('settings')}"></div>
+    <main class="flex-1 overflow-y-auto p-6">
+        <div class="flex justify-between items-center mb-5">
+            <h1 class="text-xl font-bold text-slate-800">Ayarlar</h1>
+            <a th:href="@{/settings/new}"
+               class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">+ Yeni Ayar</a>
+        </div>
+        <form method="get" th:action="@{/settings}" class="mb-4 flex gap-2">
+            <input type="text" name="search" th:value="${search}"
+                   placeholder="Ayar anahtarı ara..."
+                   class="border border-slate-300 rounded px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+            <button type="submit" class="bg-slate-700 text-white px-4 py-2 rounded text-sm hover:bg-slate-800">Ara</button>
+            <a th:href="@{/settings}" class="px-4 py-2 text-sm text-slate-500 hover:text-slate-700">Temizle</a>
+        </form>
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-slate-800 text-white">
+                <tr>
+                    <th class="px-4 py-3 text-left">Ayar Anahtarı</th>
+                    <th class="px-4 py-3 text-left">Varsayılan Değer</th>
+                    <th class="px-4 py-3 text-left">Açıklama</th>
+                    <th class="px-4 py-3 text-center">İşlem</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="s, stat : ${settings.content}"
+                    th:classappend="${stat.odd} ? 'bg-white' : 'bg-slate-50'"
+                    class="border-b border-slate-100">
+                    <td class="px-4 py-2 font-mono text-sm font-medium" th:text="${s.settingKey}">KEY</td>
+                    <td class="px-4 py-2 text-xs text-slate-500"
+                        th:text="${#strings.abbreviate(s.defaultValue, 50)}">—</td>
+                    <td class="px-4 py-2 text-xs text-slate-400"
+                        th:text="${#strings.abbreviate(s.description, 60)} ?: '—'">—</td>
+                    <td class="px-4 py-2 text-center space-x-2">
+                        <a th:href="@{/settings/{id}/edit(id=${s.settingId})}"
+                           class="text-blue-600 hover:underline text-xs">Düzenle</a>
+                        <form th:action="@{/settings/{id}/delete(id=${s.settingId})}" method="post"
+                              class="inline"
+                              onsubmit="return confirm('Bu ayarı silmek istediğinize emin misiniz?')">
+                            <button type="submit" class="text-red-500 hover:underline text-xs">Sil</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${settings.content.empty}">
+                    <td colspan="4" class="px-4 py-8 text-center text-slate-400">Ayar bulunamadı.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+</body>
+</html>

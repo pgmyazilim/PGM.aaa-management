@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Kayıt Denetimi - AAA Yönetim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div th:replace="~{layout/sidebar :: sidebar('record-audits')}"></div>
+    <main class="flex-1 overflow-y-auto p-6">
+        <h1 class="text-xl font-bold text-slate-800 mb-5">Kayıt Denetimi</h1>
+        <form method="get" th:action="@{/audit/record-audits}" class="mb-4 flex flex-wrap gap-2 items-center">
+            <select name="tableId"
+                    class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none">
+                <option value="">— Tüm Tablolar —</option>
+                <option th:each="t : ${trackedTables}"
+                        th:value="${t.trackedTableId}"
+                        th:text="${t.name}"
+                        th:selected="${t.trackedTableId == selectedTableId}">Tablo</option>
+            </select>
+            <select name="opType"
+                    class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none">
+                <option value="">— Tüm Operasyonlar —</option>
+                <option th:each="op : ${operationTypes}"
+                        th:value="${op.name()}"
+                        th:text="${op.name()}"
+                        th:selected="${op == selectedOpType}">Op</option>
+            </select>
+            <input type="datetime-local" name="from"
+                   class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none"/>
+            <input type="datetime-local" name="to"
+                   class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none"/>
+            <button type="submit" class="bg-slate-700 text-white px-4 py-2 rounded text-sm hover:bg-slate-800">Filtrele</button>
+            <a th:href="@{/audit/record-audits}" class="px-4 py-2 text-sm text-slate-500 hover:text-slate-700">Temizle</a>
+        </form>
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-slate-800 text-white">
+                <tr>
+                    <th class="px-4 py-3 text-left">Tablo</th>
+                    <th class="px-4 py-3 text-left">Kayıt ID</th>
+                    <th class="px-4 py-3 text-center">Op.</th>
+                    <th class="px-4 py-3 text-left">Aktör</th>
+                    <th class="px-4 py-3 text-left">Tarih (UTC)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="r, stat : ${audits.content}"
+                    th:classappend="${stat.odd} ? 'bg-white' : 'bg-slate-50'"
+                    class="border-b border-slate-100">
+                    <td class="px-4 py-2 text-xs font-mono" th:text="${r.trackedTable.name}">Tablo</td>
+                    <td class="px-4 py-2 text-xs font-mono text-slate-500" th:text="${r.recordId}">0</td>
+                    <td class="px-4 py-2 text-center">
+                        <span class="font-bold text-xs px-2 py-0.5 rounded"
+                              th:text="${r.operationType}"
+                              th:classappend="${r.operationType.name() == 'I'} ? 'bg-green-100 text-green-700' :
+                                             (${r.operationType.name() == 'U'} ? 'bg-yellow-100 text-yellow-700' :
+                                             (${r.operationType.name() == 'D'} ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'))">I</span>
+                    </td>
+                    <td class="px-4 py-2" th:text="${r.actorUser.fullName}">Kullanıcı</td>
+                    <td class="px-4 py-2 text-xs text-slate-500"
+                        th:text="${#temporals.format(r.occurredAtUtc, 'dd.MM.yyyy HH:mm:ss')}">—</td>
+                </tr>
+                <tr th:if="${audits.content.empty}">
+                    <td colspan="5" class="px-4 py-8 text-center text-slate-400">Kayıt denetim verisi bulunamadı.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${audits.totalPages > 1}" class="flex gap-1 mt-4 text-sm">
+            <a th:if="${!audits.first}" th:href="@{/audit/record-audits(page=${audits.number - 1})}"
+               class="px-3 py-1 border rounded hover:bg-slate-100">«</a>
+            <span class="px-3 py-1 text-slate-500"
+                  th:text="${audits.number + 1} + ' / ' + ${audits.totalPages}">1/1</span>
+            <a th:if="${!audits.last}" th:href="@{/audit/record-audits(page=${audits.number + 1})}"
+               class="px-3 py-1 border rounded hover:bg-slate-100">»</a>
+        </div>
+    </main>
+</div>
+</body>
+</html>
