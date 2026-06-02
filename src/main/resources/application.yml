@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: AAAManagement
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=AAA;encrypt=false;trustServerCertificate=true
+    username: sa
+    password: YourPassword123!
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect
+        default_schema: aaa
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+  thymeleaf:
+    cache: false
+    encoding: UTF-8
+    mode: HTML
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+logging:
+  level:
+    com.company.aaamanagement: INFO
+    org.hibernate.SQL: WARN
