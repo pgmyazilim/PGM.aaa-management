@@ -1,6 +1,7 @@
 package com.company.aaamanagement.infrastructure;
 
 import com.company.aaamanagement.domain.*;
+import com.company.aaamanagement.domain.Module;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;

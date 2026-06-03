@@ -276,6 +276,9 @@ Kalıcı sol sidebar, aktif menü öğesi Tailwind ile vurgulanır.
 - Projects CRUD
 - Modules CRUD (proje seçici)
 - Clients CRUD + ClientModules atama
+- DatabaseServers CRUD + DatabaseCredentials yönetimi
+- ModulesDatabases (modül-sunucu eşleşmeleri)
+- `DbInfo` tablosu: yalnızca listeleme (şema versiyon geçmişi), CRUD formu yok
 
 ---
 

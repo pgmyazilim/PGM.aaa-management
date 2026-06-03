@@ -2,9 +2,9 @@ spring:
   application:
     name: AAAManagement
   datasource:
-    url: jdbc:sqlserver://localhost:1433;databaseName=AAA;encrypt=false;trustServerCertificate=true
+    url: jdbc:sqlserver://10.100.101.183:1433;databaseName=AAA;encrypt=false;trustServerCertificate=true
     username: sa
-    password: YourPassword123!
+    password: sa
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   jpa:
     hibernate:
