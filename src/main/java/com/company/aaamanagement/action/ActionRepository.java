@@ -21,6 +21,13 @@ public interface ActionRepository extends JpaRepository<Action, Integer> {
 
     List<Action> findByModule_ModuleIdOrderByNameAsc(Integer moduleId);
 
+    @Query("SELECT a FROM Action a JOIN FETCH a.module " +
+           "WHERE a.actionId NOT IN " +
+           "(SELECT p.action.actionId FROM GroupActionPermission p " +
+           " WHERE p.userGroup.userGroupId = :groupId) " +
+           "ORDER BY a.name")
+    List<Action> findUnassignedForGroup(@Param("groupId") Integer groupId);
+
     boolean existsByActionKey(String actionKey);
 
     boolean existsByActionKeyAndActionIdNot(String actionKey, Integer actionId);

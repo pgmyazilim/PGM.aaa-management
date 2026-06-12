@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,5 +75,15 @@ class PermissionServiceTest {
         permissionService.togglePermission(1, 2);
 
         assertThat(perm.isAllowed()).isFalse();
+    }
+
+    @Test
+    void getUnassignedActions_delegatesToRepository() {
+        Action unassigned = Action.builder().actionId(5).name("Fatura Sil").build();
+        when(actionRepository.findUnassignedForGroup(2)).thenReturn(List.of(unassigned));
+
+        List<Action> result = permissionService.getUnassignedActions(2);
+
+        assertThat(result).containsExactly(unassigned);
     }
 }

@@ -36,6 +36,10 @@ public class PermissionService {
         return moduleRepository.findAllByOrderByNameAsc();
     }
 
+    public List<Action> getUnassignedActions(Integer groupId) {
+        return actionRepository.findUnassignedForGroup(groupId);
+    }
+
     @Transactional
     public GroupActionPermission upsertPermission(Integer actionId, Integer groupId, boolean allowed,
                                                    LocalDateTime expiresAtUtc, Short allowedExecutionCount) {
