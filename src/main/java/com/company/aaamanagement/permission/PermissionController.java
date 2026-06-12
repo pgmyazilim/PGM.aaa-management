@@ -26,6 +26,9 @@ public class PermissionController {
                 ? permissionService.getPermissionsForGroup(groupId, moduleId)
                 : List.of();
         model.addAttribute("permissions", permissions);
+        model.addAttribute("availableActions", groupId != null
+                ? permissionService.getUnassignedActions(groupId)
+                : List.of());
         model.addAttribute("groups", permissionService.getAllGroups());
         model.addAttribute("modules", permissionService.getAllModules());
         model.addAttribute("selectedGroupId", groupId);
@@ -47,7 +50,7 @@ public class PermissionController {
     @PostMapping("/upsert")
     public String upsert(@RequestParam Integer actionId,
                          @RequestParam Integer groupId,
-                         @RequestParam boolean allowed,
+                         @RequestParam(defaultValue = "false") boolean allowed,
                          @RequestParam(required = false) String expiresAtUtc,
                          @RequestParam(required = false) Short allowedExecutionCount) {
         LocalDateTime expires = expiresAtUtc != null && !expiresAtUtc.isBlank()
