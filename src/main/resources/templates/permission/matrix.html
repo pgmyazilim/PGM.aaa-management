@@ -40,6 +40,45 @@
                     class="bg-slate-700 text-white px-4 py-2 rounded text-sm hover:bg-slate-800">Filtrele</button>
         </form>
 
+        <!-- Add Action Form -->
+        <div th:if="${selectedGroupId != null}" class="bg-white rounded-lg shadow p-4 mb-5">
+            <h2 class="text-sm font-bold text-slate-700 mb-3">Gruba İşlem Ekle</h2>
+            <form th:unless="${availableActions.empty}" method="post" th:action="@{/permissions/upsert}"
+                  class="flex flex-wrap gap-3 items-end">
+                <input type="hidden" name="groupId" th:value="${selectedGroupId}"/>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">İşlem</label>
+                    <select name="actionId" required
+                            class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+                        <option value="">— İşlem seçin —</option>
+                        <option th:each="a : ${availableActions}"
+                                th:value="${a.actionId}"
+                                th:text="${a.name + ' — ' + a.module.name}">İşlem</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-2 pb-2">
+                    <input type="checkbox" id="allowed" name="allowed" value="true" checked
+                           class="w-5 h-5 accent-green-500 cursor-pointer"/>
+                    <label for="allowed" class="text-sm text-slate-700">İzinli</label>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Süre Sonu</label>
+                    <input type="datetime-local" name="expiresAtUtc"
+                           class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">İzinli Çalıştırma Sayısı</label>
+                    <input type="number" name="allowedExecutionCount" min="0" max="32767"
+                           class="border border-slate-300 rounded px-3 py-2 text-sm w-28 focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                </div>
+                <button type="submit"
+                        class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">Ekle</button>
+            </form>
+            <p th:if="${availableActions.empty}" class="text-sm text-slate-400">
+                Tüm işlemler bu gruba zaten atanmış.
+            </p>
+        </div>
+
         <!-- Matrix Table -->
         <div th:if="${selectedGroupId != null}" class="bg-white rounded-lg shadow overflow-hidden">
             <table class="w-full text-sm">
