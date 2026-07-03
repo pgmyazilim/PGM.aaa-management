@@ -2,6 +2,8 @@ package com.company.aaamanagement.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 
 @Entity
@@ -16,8 +18,15 @@ public class User {
     @ToString.Include
     private Integer userId;
 
-    @Column(name = "RowVersionUtc", nullable = false)
-    private LocalDateTime rowVersionUtc;
+    @Column(name = "ModifiedAtUtc", nullable = false)
+    private LocalDateTime modifiedAtUtc;
+
+    @Column(name = "CreatedAtUtc", insertable = false, updatable = false)
+    private LocalDateTime createdAtUtc;
+
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "RowVersion", insertable = false, updatable = false)
+    private byte[] rowVersion;
 
     @Column(name = "FirstName", nullable = false, length = 40)
     private String firstName;

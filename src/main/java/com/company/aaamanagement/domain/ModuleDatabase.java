@@ -2,6 +2,8 @@ package com.company.aaamanagement.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,8 +16,12 @@ public class ModuleDatabase {
     @Column(name = "ModuleDatabaseId")
     private Integer moduleDatabaseId;
 
-    @Column(name = "RowVersionUtc")
-    private LocalDateTime rowVersionUtc;
+    @Column(name = "ModifiedAtUtc")
+    private LocalDateTime modifiedAtUtc;
+
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "RowVersion", insertable = false, updatable = false)
+    private byte[] rowVersion;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ModuleId")

@@ -48,7 +48,7 @@ public class ActionService {
                 throw new IllegalArgumentException("Bu actionKey zaten kullanılıyor: " + action.getActionKey());
             }
         }
-        action.setRowVersionUtc(LocalDateTime.now(ZoneOffset.UTC));
+        action.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
         return actionRepository.save(action);
     }
 

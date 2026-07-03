@@ -41,7 +41,7 @@ public class GroupService {
                 throw new IllegalArgumentException("Bu grup adı zaten mevcut: " + group.getName());
             }
         }
-        group.setRowVersionUtc(LocalDateTime.now(ZoneOffset.UTC));
+        group.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
         return groupRepository.save(group);
     }
 

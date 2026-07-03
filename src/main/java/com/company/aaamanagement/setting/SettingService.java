@@ -40,7 +40,7 @@ public class SettingService {
 
     @Transactional
     public Setting saveSetting(Setting setting) {
-        setting.setRowVersionUtc(LocalDateTime.now(ZoneOffset.UTC));
+        setting.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
         return settingRepository.save(setting);
     }
 
@@ -69,7 +69,7 @@ public class SettingService {
             throw new IllegalArgumentException(
                     "Ayar değeri tam olarak bir hedef içermeli: UserId VEYA UserGroupId.");
         }
-        value.setRowVersionUtc(LocalDateTime.now(ZoneOffset.UTC));
+        value.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
         return settingValueRepository.save(value);
     }
 

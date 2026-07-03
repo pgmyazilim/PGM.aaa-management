@@ -2,6 +2,8 @@ package com.company.aaamanagement.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "DatabaseCredentials", schema = "aaa")
@@ -12,6 +14,10 @@ public class DatabaseCredential {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DatabaseCredentialId")
     private Integer databaseCredentialId;
+
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "RowVersion", insertable = false, updatable = false)
+    private byte[] rowVersion;
 
     @Column(name = "Version", length = 50)
     private String version;

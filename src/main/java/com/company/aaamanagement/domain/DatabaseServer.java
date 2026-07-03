@@ -2,6 +2,8 @@ package com.company.aaamanagement.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "DatabaseServers", schema = "aaa")
@@ -14,6 +16,10 @@ public class DatabaseServer {
     @Column(name = "DatabaseServerId")
     @ToString.Include
     private Integer databaseServerId;
+
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "RowVersion", insertable = false, updatable = false)
+    private byte[] rowVersion;
 
     @Column(name = "Version", length = 50)
     private String version;

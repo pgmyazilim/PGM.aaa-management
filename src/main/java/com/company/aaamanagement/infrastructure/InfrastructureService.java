@@ -39,7 +39,7 @@ public class InfrastructureService {
 
     @Transactional
     public Project saveProject(Project project) {
-        project.setRowVersionUtc(LocalDateTime.now(ZoneOffset.UTC));
+        project.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
         return projectRepository.save(project);
     }
 
@@ -64,7 +64,7 @@ public class InfrastructureService {
 
     @Transactional
     public Module saveModule(Module module) {
-        module.setRowVersionUtc(LocalDateTime.now(ZoneOffset.UTC));
+        module.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
         return moduleRepository.save(module);
     }
 
@@ -85,7 +85,7 @@ public class InfrastructureService {
 
     @Transactional
     public Client saveClient(Client client) {
-        client.setRowVersionUtc(LocalDateTime.now(ZoneOffset.UTC));
+        client.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
         return clientRepository.save(client);
     }
 

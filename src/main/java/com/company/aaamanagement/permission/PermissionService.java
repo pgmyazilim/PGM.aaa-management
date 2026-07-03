@@ -55,7 +55,7 @@ public class PermissionService {
         perm.setAllowed(allowed);
         perm.setExpiresAtUtc(expiresAtUtc);
         perm.setAllowedExecutionCount(allowedExecutionCount);
-        perm.setRowVersionUtc(LocalDateTime.now(ZoneOffset.UTC));
+        perm.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
         return permissionRepository.save(perm);
     }
 
@@ -72,7 +72,7 @@ public class PermissionService {
                             .action(action).userGroup(group).allowed(false).build();
                 });
         perm.setAllowed(!perm.isAllowed());
-        perm.setRowVersionUtc(LocalDateTime.now(ZoneOffset.UTC));
+        perm.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
         permissionRepository.save(perm);
     }
 

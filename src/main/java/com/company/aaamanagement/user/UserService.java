@@ -47,7 +47,7 @@ public class UserService {
                 throw new IllegalArgumentException("Bu kullanıcı adı zaten kullanılıyor: " + user.getUsername());
             }
         }
-        user.setRowVersionUtc(LocalDateTime.now(ZoneOffset.UTC));
+        user.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
         return userRepository.save(user);
     }
 

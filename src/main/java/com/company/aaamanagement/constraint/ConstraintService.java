@@ -49,7 +49,7 @@ public class ConstraintService {
 
     @Transactional
     public ActionConstraint save(ActionConstraint constraint) {
-        constraint.setRowVersionUtc(LocalDateTime.now(ZoneOffset.UTC));
+        constraint.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
         return constraintRepository.save(constraint);
     }
 
@@ -68,7 +68,7 @@ public class ConstraintService {
 
     @Transactional
     public ActionConstraintGroupValue saveGroupValue(ActionConstraintGroupValue value) {
-        value.setRowVersionUtc(LocalDateTime.now(ZoneOffset.UTC));
+        value.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
         return groupValueRepository.save(value);
     }
 
@@ -90,7 +90,7 @@ public class ConstraintService {
         val.setValueDelimiter(delimiter);
         val.setValuesLogicalOperator(valuesLogicalOp);
         val.setValueLogicalOperator(valueLogicalOp);
-        val.setRowVersionUtc(LocalDateTime.now(ZoneOffset.UTC));
+        val.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
         return groupValueRepository.save(val);
     }
 

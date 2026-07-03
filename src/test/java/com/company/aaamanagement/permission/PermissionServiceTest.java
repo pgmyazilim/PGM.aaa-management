@@ -49,7 +49,7 @@ class PermissionServiceTest {
         Action action = Action.builder().actionId(1).build();
         UserGroup group = UserGroup.builder().userGroupId(2).build();
         GroupActionPermission existing = GroupActionPermission.builder()
-                .groupOperationPermissionId(10).action(action).userGroup(group).allowed(true).build();
+                .groupActionPermissionId(10).action(action).userGroup(group).allowed(true).build();
         when(actionRepository.findById(1)).thenReturn(Optional.of(action));
         when(groupRepository.findById(2)).thenReturn(Optional.of(group));
         when(permissionRepository.findByAction_ActionIdAndUserGroup_UserGroupId(1, 2))
@@ -59,7 +59,7 @@ class PermissionServiceTest {
         GroupActionPermission result = permissionService.upsertPermission(1, 2, false, null, null);
 
         assertThat(result.isAllowed()).isFalse();
-        assertThat(result.getGroupOperationPermissionId()).isEqualTo(10);
+        assertThat(result.getGroupActionPermissionId()).isEqualTo(10);
     }
 
     @Test
