@@ -68,8 +68,17 @@ public class ConstraintService {
 
     @Transactional
     public ActionConstraintGroupValue saveGroupValue(ActionConstraintGroupValue value) {
+        validateValueLogicalOperator(value.getValueLogicalOperator());
         value.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
         return groupValueRepository.save(value);
+    }
+
+    // DB'de CHECK kısıtı: ValueLogicalOperator yalnızca AND / OR / NULL olabilir
+    private void validateValueLogicalOperator(String op) {
+        if (op != null && !op.isBlank() && !"AND".equals(op) && !"OR".equals(op)) {
+            throw new IllegalArgumentException(
+                    "ValueLogicalOperator yalnızca AND veya OR olabilir (ya da boş bırakılmalı): " + op);
+        }
     }
 
     @Transactional
@@ -86,10 +95,11 @@ public class ConstraintService {
                 .orElse(ActionConstraintGroupValue.builder()
                         .actionConstraint(constraint).userGroup(group).build());
 
+        validateValueLogicalOperator(valueLogicalOp);
         val.setValueList(valueList);
         val.setValueDelimiter(delimiter);
         val.setValuesLogicalOperator(valuesLogicalOp);
-        val.setValueLogicalOperator(valueLogicalOp);
+        val.setValueLogicalOperator(valueLogicalOp != null && valueLogicalOp.isBlank() ? null : valueLogicalOp);
         val.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
         return groupValueRepository.save(val);
     }

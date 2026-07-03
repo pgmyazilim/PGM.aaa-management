@@ -24,7 +24,7 @@ public class ModuleDatabase {
     private byte[] rowVersion;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ModuleId")
+    @JoinColumn(name = "ModuleId", nullable = false)
     private Module module;
 
     @ManyToOne(fetch = FetchType.LAZY)

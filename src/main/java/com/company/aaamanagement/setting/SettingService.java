@@ -61,6 +61,8 @@ public class SettingService {
         return groupRepository.findAllByOrderByNameAsc();
     }
 
+    // (SettingId, UserId) ve (SettingId, UserGroupId) DB'de unique: aynı hedefe
+    // ikinci kayıt yerine mevcut değer güncellenir (upsert).
     @Transactional
     public SettingValue saveSettingValue(SettingValue value) {
         boolean hasUser = value.getUser() != null;
@@ -69,8 +71,16 @@ public class SettingService {
             throw new IllegalArgumentException(
                     "Ayar değeri tam olarak bir hedef içermeli: UserId VEYA UserGroupId.");
         }
-        value.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
-        return settingValueRepository.save(value);
+        Integer settingId = value.getSetting().getSettingId();
+        SettingValue target = (hasUser
+                ? settingValueRepository.findBySetting_SettingIdAndUser_UserId(
+                        settingId, value.getUser().getUserId())
+                : settingValueRepository.findBySetting_SettingIdAndUserGroup_UserGroupId(
+                        settingId, value.getUserGroup().getUserGroupId()))
+                .orElse(value);
+        target.setValue(value.getValue());
+        target.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
+        return settingValueRepository.save(target);
     }
 
     @Transactional
