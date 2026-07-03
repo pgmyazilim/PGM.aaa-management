@@ -27,7 +27,8 @@
                 <thead class="bg-slate-800 text-white">
                 <tr>
                     <th class="px-4 py-3 text-left">İstemci Adı</th>
-                    <th class="px-4 py-3 text-left">Redirect URI</th>
+                    <th class="px-4 py-3 text-left">Durum</th>
+                    <th class="px-4 py-3 text-left">Grant Türleri</th>
                     <th class="px-4 py-3 text-center">İşlem</th>
                 </tr>
                 </thead>
@@ -36,8 +37,12 @@
                     th:classappend="${stat.odd} ? 'bg-white' : 'bg-slate-50'"
                     class="border-b border-slate-100">
                     <td class="px-4 py-2 font-medium" th:text="${c.name}">İstemci</td>
+                    <td class="px-4 py-2">
+                        <span th:if="${c.active}" class="text-green-600 text-xs font-medium">Aktif</span>
+                        <span th:unless="${c.active}" class="text-red-500 text-xs font-medium">Pasif</span>
+                    </td>
                     <td class="px-4 py-2 text-xs text-slate-500 font-mono"
-                        th:text="${c.redirectUri} ?: '—'">—</td>
+                        th:text="${c.allowedGrantTypes} ?: '—'">—</td>
                     <td class="px-4 py-2 text-center space-x-2">
                         <a th:href="@{/infrastructure/clients/{id}/edit(id=${c.clientId})}"
                            class="text-blue-600 hover:underline text-xs">Düzenle / Modüller</a>
@@ -48,7 +53,7 @@
                     </td>
                 </tr>
                 <tr th:if="${clients.content.empty}">
-                    <td colspan="3" class="px-4 py-8 text-center text-slate-400">İstemci bulunamadı.</td>
+                    <td colspan="4" class="px-4 py-8 text-center text-slate-400">İstemci bulunamadı.</td>
                 </tr>
                 </tbody>
             </table>

@@ -112,7 +112,9 @@ public class InfrastructureController {
 
     @GetMapping("/clients/new")
     public String newClient(Model model) {
-        model.addAttribute("client", new Client());
+        Client client = new Client();
+        client.setActive(true);
+        model.addAttribute("client", client);
         model.addAttribute("activePage", "infrastructure");
         return "infrastructure/client-form";
     }
@@ -123,14 +125,30 @@ public class InfrastructureController {
         model.addAttribute("client", client);
         model.addAttribute("clientModules", infraService.getClientModules(id));
         model.addAttribute("allModules", infraService.getAllModules());
+        model.addAttribute("redirectUris", infraService.getRedirectUris(id));
         model.addAttribute("activePage", "infrastructure");
         return "infrastructure/client-form";
     }
 
     @PostMapping("/clients/save")
-    public String saveClient(@ModelAttribute Client client) {
-        infraService.saveClient(client);
+    public String saveClient(@ModelAttribute Client client,
+                             @RequestParam(required = false) String clientSecret) {
+        infraService.saveClient(client, clientSecret);
         return "redirect:/infrastructure/clients";
+    }
+
+    @PostMapping("/clients/{id}/redirect-uris/add")
+    public String addRedirectUri(@PathVariable Integer id,
+                                 @RequestParam String redirectUri) {
+        infraService.addRedirectUri(id, redirectUri);
+        return "redirect:/infrastructure/clients/" + id + "/edit";
+    }
+
+    @PostMapping("/redirect-uris/{id}/delete")
+    public String deleteRedirectUri(@PathVariable Integer id,
+                                    @RequestParam Integer clientId) {
+        infraService.deleteRedirectUri(id);
+        return "redirect:/infrastructure/clients/" + clientId + "/edit";
     }
 
     @PostMapping("/clients/{id}/delete")

@@ -15,4 +15,8 @@ public interface ClientRepository extends JpaRepository<Client, Integer> {
     Page<Client> findBySearch(@Param("search") String search, Pageable pageable);
 
     List<Client> findAllByOrderByNameAsc();
+
+    boolean existsByName(String name);
+
+    boolean existsByNameAndClientIdNot(String name, Integer clientId);
 }

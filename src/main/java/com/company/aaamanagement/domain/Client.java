@@ -28,10 +28,24 @@ public class Client {
     @Column(name = "RowVersion", insertable = false, updatable = false)
     private byte[] rowVersion;
 
-    @Column(name = "Name", nullable = false, length = 200)
+    @Column(name = "Name", nullable = false, length = 200, unique = true)
     @ToString.Include
     private String name;
 
-    @Column(name = "RedirectUri", length = 400)
-    private String redirectUri;
+    @Column(name = "ClientSecretHash", length = 200)
+    private String clientSecretHash;
+
+    @Column(name = "IsActive", nullable = false)
+    private boolean active;
+
+    @Column(name = "AllowedGrantTypes", length = 200)
+    private String allowedGrantTypes;
+
+    @Column(name = "AccessTokenLifetimeSeconds", nullable = false)
+    @Builder.Default
+    private int accessTokenLifetimeSeconds = 3600;
+
+    @Column(name = "RefreshTokenLifetimeSeconds", nullable = false)
+    @Builder.Default
+    private int refreshTokenLifetimeSeconds = 1209600;
 }
