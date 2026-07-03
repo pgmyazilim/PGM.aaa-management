@@ -30,6 +30,10 @@ public class Session {
     @JoinColumn(name = "UserId", nullable = false)
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ClientId")
+    private Client client;
+
     @Column(name = "SessionKey", nullable = false, unique = true, columnDefinition = "uniqueidentifier")
     private UUID sessionKey;
 
@@ -41,6 +45,12 @@ public class Session {
 
     @Column(name = "ClosedAtUtc")
     private LocalDateTime closedAtUtc;
+
+    @Column(name = "ExpiresAtUtc")
+    private LocalDateTime expiresAtUtc;
+
+    @Column(name = "LastActivityUtc")
+    private LocalDateTime lastActivityUtc;
 
     @Column(name = "IsNormalClose")
     private Boolean normalClose;

@@ -31,8 +31,11 @@
                     <th class="px-4 py-3 text-left">ID</th>
                     <th class="px-4 py-3 text-left">Kullanıcı</th>
                     <th class="px-4 py-3 text-center">Durum</th>
+                    <th class="px-4 py-3 text-left">İstemci</th>
                     <th class="px-4 py-3 text-left">Açıldı (UTC)</th>
                     <th class="px-4 py-3 text-left">Kapatıldı (UTC)</th>
+                    <th class="px-4 py-3 text-left">Bitiş (UTC)</th>
+                    <th class="px-4 py-3 text-left">Son Aktivite (UTC)</th>
                     <th class="px-4 py-3 text-left">IP Adresi</th>
                 </tr>
                 </thead>
@@ -46,14 +49,20 @@
                         <span th:if="${s.open}" class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded">Açık</span>
                         <span th:unless="${s.open}" class="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded">Kapalı</span>
                     </td>
+                    <td class="px-4 py-2 text-xs"
+                        th:text="${s.client != null} ? ${s.client.name} : '—'">—</td>
                     <td class="px-4 py-2 text-xs text-slate-500"
                         th:text="${#temporals.format(s.openedAtUtc, 'dd.MM.yyyy HH:mm')}">—</td>
                     <td class="px-4 py-2 text-xs text-slate-500"
                         th:text="${s.closedAtUtc != null} ? ${#temporals.format(s.closedAtUtc, 'dd.MM.yyyy HH:mm')} : '—'">—</td>
+                    <td class="px-4 py-2 text-xs text-slate-500"
+                        th:text="${s.expiresAtUtc != null} ? ${#temporals.format(s.expiresAtUtc, 'dd.MM.yyyy HH:mm')} : '—'">—</td>
+                    <td class="px-4 py-2 text-xs text-slate-500"
+                        th:text="${s.lastActivityUtc != null} ? ${#temporals.format(s.lastActivityUtc, 'dd.MM.yyyy HH:mm')} : '—'">—</td>
                     <td class="px-4 py-2 font-mono text-xs" th:text="${s.clientIpAddress} ?: '—'">—</td>
                 </tr>
                 <tr th:if="${sessions.content.empty}">
-                    <td colspan="6" class="px-4 py-8 text-center text-slate-400">Oturum bulunamadı.</td>
+                    <td colspan="9" class="px-4 py-8 text-center text-slate-400">Oturum bulunamadı.</td>
                 </tr>
                 </tbody>
             </table>

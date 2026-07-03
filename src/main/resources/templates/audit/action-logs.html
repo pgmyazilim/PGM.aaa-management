@@ -30,6 +30,7 @@
                 <tr>
                     <th class="px-4 py-3 text-left">ID</th>
                     <th class="px-4 py-3 text-left">İşlem</th>
+                    <th class="px-4 py-3 text-left">Kullanıcı</th>
                     <th class="px-4 py-3 text-center">Sonuç</th>
                     <th class="px-4 py-3 text-left">Tarih (UTC)</th>
                     <th class="px-4 py-3 text-left">Not</th>
@@ -41,6 +42,8 @@
                     class="border-b border-slate-100">
                     <td class="px-4 py-2 text-slate-400 font-mono text-xs" th:text="${log.actionLogId}">0</td>
                     <td class="px-4 py-2" th:text="${log.action.name}">İşlem</td>
+                    <td class="px-4 py-2 text-xs"
+                        th:text="${log.actorUser != null} ? ${log.actorUser.fullName} : '—'">—</td>
                     <td class="px-4 py-2 text-center">
                         <span th:if="${log.success}" class="text-green-600 font-bold text-xs">✓ Başarılı</span>
                         <span th:unless="${log.success}" class="text-red-500 font-bold text-xs">✗ Başarısız</span>
@@ -51,7 +54,7 @@
                         th:text="${#strings.abbreviate(log.userNote, 60)} ?: '—'">—</td>
                 </tr>
                 <tr th:if="${logs.content.empty}">
-                    <td colspan="5" class="px-4 py-8 text-center text-slate-400">Log bulunamadı.</td>
+                    <td colspan="6" class="px-4 py-8 text-center text-slate-400">Log bulunamadı.</td>
                 </tr>
                 </tbody>
             </table>

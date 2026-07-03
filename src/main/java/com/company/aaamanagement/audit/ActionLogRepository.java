@@ -17,7 +17,7 @@ public interface ActionLogRepository extends JpaRepository<ActionLog, Long> {
            "(:success IS NULL OR l.success = :success) AND " +
            "(:from IS NULL OR l.occurredAtUtc >= :from) AND " +
            "(:to IS NULL OR l.occurredAtUtc <= :to)")
-    @EntityGraph(attributePaths = "action")
+    @EntityGraph(attributePaths = {"action", "actorUser"})
     Page<ActionLog> findByFilters(@Param("actionId") Integer actionId,
                                    @Param("success") Boolean success,
                                    @Param("from") LocalDateTime from,
