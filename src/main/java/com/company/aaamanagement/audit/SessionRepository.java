@@ -3,6 +3,7 @@ package com.company.aaamanagement.audit;
 import com.company.aaamanagement.domain.Session;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +17,7 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
            "(:open IS NULL OR s.open = :open) AND " +
            "(:from IS NULL OR s.openedAtUtc >= :from) AND " +
            "(:to IS NULL OR s.openedAtUtc <= :to)")
+    @EntityGraph(attributePaths = "user")
     Page<Session> findByFilters(@Param("userId") Integer userId,
                                  @Param("open") Boolean open,
                                  @Param("from") LocalDateTime from,

@@ -4,6 +4,7 @@ import com.company.aaamanagement.domain.OperationType;
 import com.company.aaamanagement.domain.RecordAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,6 +18,7 @@ public interface RecordAuditRepository extends JpaRepository<RecordAudit, Long> 
            "(:opType IS NULL OR r.operationType = :opType) AND " +
            "(:from IS NULL OR r.occurredAtUtc >= :from) AND " +
            "(:to IS NULL OR r.occurredAtUtc <= :to)")
+    @EntityGraph(attributePaths = {"trackedTable", "actorUser"})
     Page<RecordAudit> findByFilters(@Param("tableId") Integer tableId,
                                      @Param("opType") OperationType opType,
                                      @Param("from") LocalDateTime from,

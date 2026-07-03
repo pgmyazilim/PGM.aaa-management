@@ -3,6 +3,7 @@ package com.company.aaamanagement.action;
 import com.company.aaamanagement.domain.Action;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +16,7 @@ public interface ActionRepository extends JpaRepository<Action, Integer> {
            "(:moduleId IS NULL OR a.module.moduleId = :moduleId) AND " +
            "(:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(a.actionKey) LIKE LOWER(CONCAT('%', :search, '%')))")
+    @EntityGraph(attributePaths = "module")
     Page<Action> findByModuleAndSearch(@Param("moduleId") Integer moduleId,
                                        @Param("search") String search,
                                        Pageable pageable);
