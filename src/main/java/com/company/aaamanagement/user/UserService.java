@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
     private final UserGroupMemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public Page<User> list(String search, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("lastName", "firstName"));
@@ -37,18 +39,73 @@ public class UserService {
     }
 
     @Transactional
-    public User save(User user) {
-        if (user.getUserId() == null) {
-            if (userRepository.existsByUsername(user.getUsername())) {
-                throw new IllegalArgumentException("Bu kullanıcı adı zaten kullanılıyor: " + user.getUsername());
+    public User save(User form, String rawPassword) {
+        boolean isNew = form.getUserId() == null;
+        if (isNew) {
+            if (userRepository.existsByUsername(form.getUsername())) {
+                throw new IllegalArgumentException("Bu kullanıcı adı zaten kullanılıyor: " + form.getUsername());
             }
         } else {
-            if (userRepository.existsByUsernameAndUserIdNot(user.getUsername(), user.getUserId())) {
-                throw new IllegalArgumentException("Bu kullanıcı adı zaten kullanılıyor: " + user.getUsername());
+            if (userRepository.existsByUsernameAndUserIdNot(form.getUsername(), form.getUserId())) {
+                throw new IllegalArgumentException("Bu kullanıcı adı zaten kullanılıyor: " + form.getUsername());
             }
         }
+        validateEmailUnique(form);
+
+        User user = isNew ? form : mergeIntoExisting(form);
+
+        if (rawPassword != null && !rawPassword.isBlank()) {
+            user.setPasswordHash(passwordEncoder.encode(rawPassword));
+            user.setLastPasswordChangeUtc(LocalDateTime.now(ZoneOffset.UTC));
+        } else if (isNew) {
+            throw new IllegalArgumentException("Yeni kullanıcı için parola zorunludur.");
+        }
+
         user.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
         return userRepository.save(user);
+    }
+
+    // Form yalnızca düzenlenebilir alanları gönderir; hash, OTP secret'ları ve
+    // kilit sayaçları gibi form dışı alanlar mevcut kayıttan korunur.
+    private User mergeIntoExisting(User form) {
+        User user = findById(form.getUserId());
+        user.setFirstName(form.getFirstName());
+        user.setMiddleName(form.getMiddleName());
+        user.setLastName(form.getLastName());
+        user.setUsername(form.getUsername());
+        user.setEmailUser(form.getEmailUser());
+        user.setEmailDomain(form.getEmailDomain());
+        user.setBadgeNo(form.getBadgeNo());
+        user.setIdNo(form.getIdNo());
+        user.setWelcomeMessage(form.getWelcomeMessage());
+        user.setActive(form.isActive());
+        user.setSuperUser(form.isSuperUser());
+        user.setAlwaysUseOtp(form.getAlwaysUseOtp());
+        return user;
+    }
+
+    private void validateEmailUnique(User form) {
+        if (form.getEmailUser() == null || form.getEmailUser().isBlank()
+                || form.getEmailDomain() == null || form.getEmailDomain().isBlank()) {
+            return;
+        }
+        boolean exists = form.getUserId() == null
+                ? userRepository.existsByEmailUserIgnoreCaseAndEmailDomainIgnoreCase(
+                        form.getEmailUser(), form.getEmailDomain())
+                : userRepository.existsByEmailUserIgnoreCaseAndEmailDomainIgnoreCaseAndUserIdNot(
+                        form.getEmailUser(), form.getEmailDomain(), form.getUserId());
+        if (exists) {
+            throw new IllegalArgumentException("Bu e-posta adresi başka bir kullanıcıya kayıtlı: "
+                    + form.getEmailUser() + "@" + form.getEmailDomain());
+        }
+    }
+
+    @Transactional
+    public void unlock(Integer id) {
+        User user = findById(id);
+        user.setFailedLoginCount(0);
+        user.setLockedUntilUtc(null);
+        user.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
     }
 
     @Transactional

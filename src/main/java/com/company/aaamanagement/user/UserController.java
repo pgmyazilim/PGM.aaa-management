@@ -43,9 +43,16 @@ public class UserController {
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute User user) {
-        userService.save(user);
+    public String save(@ModelAttribute User user,
+                       @RequestParam(required = false) String password) {
+        userService.save(user, password);
         return "redirect:/users";
+    }
+
+    @PostMapping("/{id}/unlock")
+    public String unlock(@PathVariable Integer id) {
+        userService.unlock(id);
+        return "redirect:/users/" + id + "/edit";
     }
 
     @PostMapping("/{id}/delete")

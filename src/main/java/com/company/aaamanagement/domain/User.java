@@ -44,8 +44,20 @@ public class User {
     @Column(name = "PasswordHashLegacy", length = 64)
     private String passwordHashLegacy;
 
-    @Column(name = "PasswordHash", nullable = false, length = 64)
+    @Column(name = "PasswordHash", nullable = false, length = 200)
     private String passwordHash;
+
+    @Column(name = "FailedLoginCount", nullable = false)
+    private int failedLoginCount;
+
+    @Column(name = "LockedUntilUtc")
+    private LocalDateTime lockedUntilUtc;
+
+    @Column(name = "OtpSecretEncrypted", length = 256)
+    private byte[] otpSecretEncrypted;
+
+    @Column(name = "OtpRecoveryCodesEncrypted", columnDefinition = "varbinary(max)")
+    private byte[] otpRecoveryCodesEncrypted;
 
     @Column(name = "IsActive", nullable = false)
     private boolean active;
@@ -68,20 +80,20 @@ public class User {
     @Column(name = "EmailDomain", length = 378)
     private String emailDomain;
 
-    @Column(name = "PhoneHome")
-    private Long phoneHome;
+    @Column(name = "PhoneHome", length = 25)
+    private String phoneHome;
 
-    @Column(name = "PhoneOffice")
-    private Long phoneOffice;
+    @Column(name = "PhoneOffice", length = 25)
+    private String phoneOffice;
 
     @Column(name = "PhoneOfficeExt")
     private Integer phoneOfficeExt;
 
-    @Column(name = "PhoneFax")
-    private Long phoneFax;
+    @Column(name = "PhoneFax", length = 25)
+    private String phoneFax;
 
-    @Column(name = "PhoneMobile")
-    private Long phoneMobile;
+    @Column(name = "PhoneMobile", length = 25)
+    private String phoneMobile;
 
     @Column(name = "IsPhoneVerified")
     private Boolean phoneVerified;
