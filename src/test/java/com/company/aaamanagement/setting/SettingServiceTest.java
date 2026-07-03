@@ -12,6 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -55,12 +58,14 @@ class SettingServiceTest {
     }
 
     @Test
-    void saveSettingValue_withOnlyUser_savesSuccessfully() {
+    void saveSettingValue_withOnlyUser_insertsWhenTargetHasNoValue() {
         SettingValue value = SettingValue.builder()
                 .setting(Setting.builder().settingId(1).build())
                 .user(User.builder().userId(1).build())
                 .value("test")
                 .build();
+        when(settingValueRepository.findBySetting_SettingIdAndUser_UserId(1, 1))
+                .thenReturn(Optional.empty());
         when(settingValueRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
         settingService.saveSettingValue(value);
@@ -69,16 +74,42 @@ class SettingServiceTest {
     }
 
     @Test
-    void saveSettingValue_withOnlyGroup_savesSuccessfully() {
+    void saveSettingValue_withOnlyGroup_insertsWhenTargetHasNoValue() {
         SettingValue value = SettingValue.builder()
                 .setting(Setting.builder().settingId(1).build())
                 .userGroup(UserGroup.builder().userGroupId(2).build())
                 .value("test")
                 .build();
+        when(settingValueRepository.findBySetting_SettingIdAndUserGroup_UserGroupId(1, 2))
+                .thenReturn(Optional.empty());
         when(settingValueRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
         settingService.saveSettingValue(value);
 
         verify(settingValueRepository).save(value);
+    }
+
+    @Test
+    void saveSettingValue_whenTargetAlreadyHasValue_updatesExistingRecord() {
+        SettingValue existing = SettingValue.builder()
+                .settingValueId(7)
+                .setting(Setting.builder().settingId(1).build())
+                .user(User.builder().userId(1).build())
+                .value("eski")
+                .build();
+        SettingValue incoming = SettingValue.builder()
+                .setting(Setting.builder().settingId(1).build())
+                .user(User.builder().userId(1).build())
+                .value("yeni")
+                .build();
+        when(settingValueRepository.findBySetting_SettingIdAndUser_UserId(1, 1))
+                .thenReturn(Optional.of(existing));
+        when(settingValueRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        SettingValue result = settingService.saveSettingValue(incoming);
+
+        assertThat(result.getSettingValueId()).isEqualTo(7);
+        assertThat(result.getValue()).isEqualTo("yeni");
+        verify(settingValueRepository).save(existing);
     }
 }
