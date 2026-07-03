@@ -43,4 +43,7 @@ public class GroupActionPermission {
 
     @Column(name = "AllowedExecutionCount")
     private Short allowedExecutionCount;
+
+    @Column(name = "UsedExecutionCount", nullable = false)
+    private short usedExecutionCount;
 }

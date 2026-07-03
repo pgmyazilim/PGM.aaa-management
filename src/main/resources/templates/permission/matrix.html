@@ -89,6 +89,7 @@
                     <th class="px-4 py-3 text-center w-24">İzin Var</th>
                     <th class="px-4 py-3 text-center">Son Güncelleme</th>
                     <th class="px-4 py-3 text-center">Süre Sonu</th>
+                    <th class="px-4 py-3 text-center">Kullanım</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -109,13 +110,16 @@
                                class="w-5 h-5 accent-green-500 cursor-pointer"/>
                     </td>
                     <td class="px-4 py-2 text-center text-xs text-slate-500"
-                        th:text="${perm.rowVersionUtc != null} ? ${#temporals.format(perm.rowVersionUtc, 'dd.MM.yyyy')} : '—'">—</td>
+                        th:text="${perm.modifiedAtUtc != null} ? ${#temporals.format(perm.modifiedAtUtc, 'dd.MM.yyyy')} : '—'">—</td>
                     <td class="px-4 py-2 text-center text-xs"
                         th:classappend="${perm.expiresAtUtc != null} ? 'text-orange-500 font-medium' : 'text-slate-400'"
                         th:text="${perm.expiresAtUtc != null} ? ${#temporals.format(perm.expiresAtUtc, 'dd.MM.yyyy')} : '—'">—</td>
+                    <td class="px-4 py-2 text-center text-xs"
+                        th:classappend="${perm.allowedExecutionCount != null and perm.usedExecutionCount >= perm.allowedExecutionCount} ? 'text-red-500 font-medium' : 'text-slate-500'"
+                        th:text="${perm.allowedExecutionCount != null} ? ${perm.usedExecutionCount + ' / ' + perm.allowedExecutionCount} : '—'">—</td>
                 </tr>
                 <tr th:if="${permissions.empty}">
-                    <td colspan="5" class="px-4 py-8 text-center text-slate-400">
+                    <td colspan="6" class="px-4 py-8 text-center text-slate-400">
                         Bu grup için henüz yetki tanımlanmamış.
                     </td>
                 </tr>

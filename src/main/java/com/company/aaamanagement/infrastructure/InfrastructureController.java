@@ -205,9 +205,10 @@ public class InfrastructureController {
 
     @PostMapping("/db-servers/{serverId}/credentials/save")
     public String saveCredential(@PathVariable Integer serverId,
-                                  @ModelAttribute DatabaseCredential credential) {
+                                  @ModelAttribute DatabaseCredential credential,
+                                  @RequestParam(required = false) String password) {
         credential.setDatabaseServer(infraService.findServerById(serverId));
-        infraService.saveCredential(credential);
+        infraService.saveCredential(credential, password);
         return "redirect:/infrastructure/db-servers/" + serverId + "/edit";
     }
 

@@ -1,5 +1,6 @@
 package com.company.aaamanagement.infrastructure;
 
+import com.company.aaamanagement.crypto.CryptoService;
 import com.company.aaamanagement.domain.*;
 import com.company.aaamanagement.domain.Module;
 import jakarta.persistence.EntityNotFoundException;
@@ -29,6 +30,7 @@ public class InfrastructureService {
     private final DatabaseCredentialRepository credentialRepository;
     private final ModuleDatabaseRepository moduleDatabaseRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CryptoService cryptoService;
 
     // --- Projects ---
     public Page<Project> listProjects(String search, int page, int size) {
@@ -197,7 +199,10 @@ public class InfrastructureService {
     }
 
     @Transactional
-    public DatabaseCredential saveCredential(DatabaseCredential credential) {
+    public DatabaseCredential saveCredential(DatabaseCredential credential, String password) {
+        if (password != null && !password.isBlank()) {
+            credential.setPasswordEncrypted(cryptoService.encrypt(password));
+        }
         return credentialRepository.save(credential);
     }
 

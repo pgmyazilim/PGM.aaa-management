@@ -29,6 +29,6 @@ public class DatabaseCredential {
     @Column(name = "Username", length = 100)
     private String username;
 
-    @Column(name = "Password", length = 100)
-    private String password;
+    @Column(name = "PasswordEncrypted", length = 512)
+    private byte[] passwordEncrypted;
 }
