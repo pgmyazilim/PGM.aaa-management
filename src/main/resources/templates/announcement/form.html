@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Duyuru Formu - AAA Yönetim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div th:replace="~{layout/sidebar :: sidebar('announcements')}"></div>
+    <main class="flex-1 overflow-y-auto p-6">
+        <div class="max-w-2xl mx-auto space-y-6">
+            <div class="flex items-center gap-3">
+                <a th:href="@{/announcements}" class="text-slate-500 hover:text-slate-700 text-sm">← Duyurular</a>
+                <h1 class="text-xl font-bold text-slate-800"
+                    th:text="${announcement.announcementId != null} ? 'Duyuru Düzenle' : 'Yeni Duyuru'">Duyuru</h1>
+            </div>
+
+            <form th:action="@{/announcements/save}" method="post"
+                  class="bg-white rounded-lg shadow p-6 space-y-4">
+                <input type="hidden" name="announcementId" th:value="${announcement.announcementId}"/>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Başlık *</label>
+                    <input type="text" name="title" th:value="${announcement.title}" required
+                           class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">İçerik *</label>
+                    <textarea name="body" rows="5" required th:text="${announcement.body}"
+                              class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">İçerik Formatı</label>
+                        <select name="bodyFormat"
+                                class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none">
+                            <option value="markdown" th:selected="${announcement.bodyFormat == 'markdown'}">markdown</option>
+                            <option value="plain" th:selected="${announcement.bodyFormat == 'plain'}">plain</option>
+                            <option value="html" th:selected="${announcement.bodyFormat == 'html'}">html</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Önem</label>
+                        <select name="severity"
+                                class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none">
+                            <option value="info" th:selected="${announcement.severity == 'info'}">info</option>
+                            <option value="success" th:selected="${announcement.severity == 'success'}">success</option>
+                            <option value="warning" th:selected="${announcement.severity == 'warning'}">warning</option>
+                            <option value="critical" th:selected="${announcement.severity == 'critical'}">critical</option>
+                            <option value="maintenance" th:selected="${announcement.severity == 'maintenance'}">maintenance</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Yayın Başlangıcı (UTC)</label>
+                        <input type="datetime-local" name="publishFromUtc"
+                               th:value="${announcement.publishFromUtc != null} ? ${#temporals.format(announcement.publishFromUtc, 'yyyy-MM-dd''T''HH:mm')} : ''"
+                               class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none"/>
+                        <p class="text-xs text-slate-400 mt-1">Boş bırakılırsa şimdi başlar.</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Yayın Bitişi (UTC)</label>
+                        <input type="datetime-local" name="publishUntilUtc"
+                               th:value="${announcement.publishUntilUtc != null} ? ${#temporals.format(announcement.publishUntilUtc, 'yyyy-MM-dd''T''HH:mm')} : ''"
+                               class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none"/>
+                        <p class="text-xs text-slate-400 mt-1">Boş bırakılırsa süresiz yayında kalır.</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <label class="flex items-center gap-2 text-sm cursor-pointer">
+                        <input type="checkbox" name="active" value="true" th:checked="${announcement.active}"
+                               class="w-4 h-4"/> Aktif
+                    </label>
+                    <label class="flex items-center gap-2 text-sm cursor-pointer">
+                        <input type="checkbox" name="global" value="true" th:checked="${announcement.global}"
+                               class="w-4 h-4"/> Global (tüm kullanıcılar)
+                    </label>
+                    <label class="flex items-center gap-2 text-sm cursor-pointer">
+                        <input type="checkbox" name="pinned" value="true" th:checked="${announcement.pinned}"
+                               class="w-4 h-4"/> Sabitlenmiş
+                    </label>
+                    <label class="flex items-center gap-2 text-sm cursor-pointer">
+                        <input type="checkbox" name="requiresAcknowledgement" value="true"
+                               th:checked="${announcement.requiresAcknowledgement}"
+                               class="w-4 h-4"/> Onay gerekli
+                    </label>
+                    <label class="flex items-center gap-2 text-sm cursor-pointer">
+                        <input type="checkbox" name="dismissible" value="true" th:checked="${announcement.dismissible}"
+                               class="w-4 h-4"/> Kapatılabilir
+                    </label>
+                </div>
+                <div th:if="${announcement.announcementId == null}">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Oluşturan Kullanıcı *</label>
+                    <select name="createdByUserId" required
+                            class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none">
+                        <option value="">— Seçin —</option>
+                        <option th:each="u : ${allUsers}" th:value="${u.userId}" th:text="${u.username}">Kullanıcı</option>
+                    </select>
+                </div>
+                <div th:if="${announcement.announcementId != null}" class="text-xs text-slate-500">
+                    Oluşturan: <span class="font-medium" th:text="${announcement.createdByUser.username}">—</span>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Ek Bilgi</label>
+                    <textarea name="extraInfo" rows="2" th:text="${announcement.extraInfo}"
+                              class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none"></textarea>
+                </div>
+                <div class="flex gap-3">
+                    <button type="submit"
+                            class="bg-blue-600 text-white px-6 py-2 rounded text-sm hover:bg-blue-700">Kaydet</button>
+                    <a th:href="@{/announcements}" class="px-6 py-2 rounded text-sm border border-slate-300 hover:bg-slate-50">İptal</a>
+                </div>
+            </form>
+
+            <!-- Targets (only on edit) -->
+            <div th:if="${announcement.announcementId != null}" class="bg-white rounded-lg shadow p-6">
+                <h2 class="font-semibold text-slate-700 mb-1">Hedefler</h2>
+                <p class="text-xs text-slate-400 mb-4"
+                   th:if="${announcement.global}">Duyuru global: hedeflerden bağımsız olarak tüm kullanıcılara gösterilir.</p>
+                <table th:if="${!targets.empty}" class="w-full text-sm mb-4">
+                    <thead class="bg-slate-100">
+                    <tr>
+                        <th class="px-3 py-2 text-left">Hedef</th>
+                        <th class="px-3 py-2 text-center">İşlem</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="t : ${targets}" class="border-b border-slate-100">
+                        <td class="px-3 py-2 text-xs">
+                            <span th:if="${t.user != null}" class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded"
+                                  th:text="'👤 ' + ${t.user.username}">Kullanıcı</span>
+                            <span th:if="${t.userGroup != null}" class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded"
+                                  th:text="'👥 ' + ${t.userGroup.name}">Grup</span>
+                        </td>
+                        <td class="px-3 py-2 text-center">
+                            <form th:action="@{/announcements/targets/{tid}/delete(tid=${t.announcementTargetId})}"
+                                  method="post" class="inline"
+                                  onsubmit="return confirm('Silinsin mi?')">
+                                <input type="hidden" name="announcementId" th:value="${announcement.announcementId}"/>
+                                <button type="submit" class="text-red-500 hover:underline text-xs">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <form th:action="@{/announcements/{id}/targets/add(id=${announcement.announcementId})}"
+                      method="post" class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Kullanıcı</label>
+                        <select name="userId"
+                                class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none">
+                            <option value="">— Seçin —</option>
+                            <option th:each="u : ${allUsers}" th:value="${u.userId}" th:text="${u.username}">Kullanıcı</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">VEYA Grup</label>
+                        <select name="userGroupId"
+                                class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none">
+                            <option value="">— Seçin —</option>
+                            <option th:each="g : ${allGroups}" th:value="${g.userGroupId}" th:text="${g.name}">Grup</option>
+                        </select>
+                    </div>
+                    <div class="col-span-2">
+                        <button type="submit"
+                                class="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700">Hedef Ekle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

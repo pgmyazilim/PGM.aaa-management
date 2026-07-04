@@ -70,6 +70,13 @@
             <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Yönetim</span>
         </li>
         <li>
+            <a th:href="@{/announcements}"
+               th:classappend="${activePage == 'announcements'} ? 'bg-slate-700 text-white' : 'hover:bg-slate-700 hover:text-white'"
+               class="flex items-center gap-2 px-4 py-2 transition-colors">
+                <span>📣</span> Duyurular
+            </a>
+        </li>
+        <li>
             <a th:href="@{/settings}"
                th:classappend="${activePage == 'settings'} ? 'bg-slate-700 text-white' : 'hover:bg-slate-700 hover:text-white'"
                class="flex items-center gap-2 px-4 py-2 transition-colors">
