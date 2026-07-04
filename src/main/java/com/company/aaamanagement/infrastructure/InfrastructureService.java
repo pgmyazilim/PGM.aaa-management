@@ -113,4 +113,49 @@ public class InfrastructureService {
     public void deleteCredential(Integer id) {
         credentialRepository.deleteById(id);
     }
+
+    // --- Module Databases ---
+    public List<ModuleDatabase> getModuleDatabases(Integer moduleId) {
+        return moduleDatabaseRepository.findByModule_ModuleIdOrderByDatabaseNameAsc(moduleId);
+    }
+
+    public List<DatabaseCredential> getAllCredentials() {
+        return credentialRepository.findAllByOrderByUsernameAsc();
+    }
+
+    @Transactional
+    public ModuleDatabase addModuleDatabase(Integer moduleId, Integer serverId, Integer credentialId,
+                                            String databaseName, String databaseAlias) {
+        if (databaseName == null || databaseName.isBlank()) {
+            throw new IllegalArgumentException("Veritabanı adı boş olamaz.");
+        }
+        Module module = findModuleById(moduleId);
+        DatabaseServer server = serverId != null ? findServerById(serverId) : null;
+        DatabaseCredential credential = null;
+        if (credentialId != null) {
+            credential = credentialRepository.findById(credentialId)
+                    .orElseThrow(() -> new EntityNotFoundException("Kimlik bilgisi bulunamadı: " + credentialId));
+            DatabaseServer credentialServer = credential.getDatabaseServer();
+            if (server == null) {
+                // sunucu seçilmediyse kimlik bilgisinin sunucusunu kullan
+                server = credentialServer;
+            } else if (credentialServer != null
+                    && !credentialServer.getDatabaseServerId().equals(server.getDatabaseServerId())) {
+                throw new IllegalArgumentException("Seçilen kimlik bilgisi seçilen sunucuya ait değil.");
+            }
+        }
+        return moduleDatabaseRepository.save(ModuleDatabase.builder()
+                .module(module)
+                .databaseServer(server)
+                .databaseCredential(credential)
+                .databaseName(databaseName.trim())
+                .databaseAlias(databaseAlias == null || databaseAlias.isBlank() ? null : databaseAlias.trim())
+                .modifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC))
+                .build());
+    }
+
+    @Transactional
+    public void deleteModuleDatabase(Integer id) {
+        moduleDatabaseRepository.deleteById(id);
+    }
 }

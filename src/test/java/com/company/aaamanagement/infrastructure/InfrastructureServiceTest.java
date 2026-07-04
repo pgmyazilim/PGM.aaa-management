@@ -1,0 +1,71 @@
+package com.company.aaamanagement.infrastructure;
+
+import com.company.aaamanagement.crypto.CryptoService;
+import com.company.aaamanagement.domain.DatabaseCredential;
+import com.company.aaamanagement.domain.DatabaseServer;
+import com.company.aaamanagement.domain.Module;
+import com.company.aaamanagement.domain.ModuleDatabase;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class InfrastructureServiceTest {
+
+    @Mock ProjectRepository projectRepository;
+    @Mock ModuleRepository moduleRepository;
+    @Mock DatabaseServerRepository serverRepository;
+    @Mock DatabaseCredentialRepository credentialRepository;
+    @Mock ModuleDatabaseRepository moduleDatabaseRepository;
+    @Mock CryptoService cryptoService;
+    @InjectMocks InfrastructureService infrastructureService;
+
+    @Test
+    void addModuleDatabase_whenNameBlank_throwsIllegalArgument() {
+        assertThatThrownBy(() -> infrastructureService.addModuleDatabase(1, null, null, "  ", null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Veritabanı adı");
+
+        verify(moduleDatabaseRepository, never()).save(any());
+    }
+
+    @Test
+    void addModuleDatabase_whenCredentialBelongsToOtherServer_throwsIllegalArgument() {
+        DatabaseServer selected = DatabaseServer.builder().databaseServerId(1).build();
+        DatabaseServer other = DatabaseServer.builder().databaseServerId(2).build();
+        when(moduleRepository.findById(5)).thenReturn(Optional.of(Module.builder().moduleId(5).build()));
+        when(serverRepository.findById(1)).thenReturn(Optional.of(selected));
+        when(credentialRepository.findById(9)).thenReturn(Optional.of(
+                DatabaseCredential.builder().databaseCredentialId(9).databaseServer(other).build()));
+
+        assertThatThrownBy(() -> infrastructureService.addModuleDatabase(5, 1, 9, "AaaDb", null))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(moduleDatabaseRepository, never()).save(any());
+    }
+
+    @Test
+    void addModuleDatabase_whenOnlyCredentialGiven_inferServerFromCredential() {
+        DatabaseServer server = DatabaseServer.builder().databaseServerId(3).build();
+        when(moduleRepository.findById(5)).thenReturn(Optional.of(Module.builder().moduleId(5).build()));
+        when(credentialRepository.findById(9)).thenReturn(Optional.of(
+                DatabaseCredential.builder().databaseCredentialId(9).databaseServer(server).build()));
+        when(moduleDatabaseRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        ModuleDatabase saved = infrastructureService.addModuleDatabase(5, null, 9, " AaaDb ", "  ");
+
+        assertThat(saved.getDatabaseServer()).isSameAs(server);
+        assertThat(saved.getDatabaseName()).isEqualTo("AaaDb");
+        assertThat(saved.getDatabaseAlias()).isNull();
+        assertThat(saved.getModifiedAtUtc()).isNotNull();
+    }
+}

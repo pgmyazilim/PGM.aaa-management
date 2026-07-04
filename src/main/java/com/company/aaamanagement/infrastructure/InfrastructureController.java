@@ -80,6 +80,9 @@ public class InfrastructureController {
     public String editModule(@PathVariable Integer id, Model model) {
         model.addAttribute("module", infraService.findModuleById(id));
         model.addAttribute("projects", infraService.getAllProjects());
+        model.addAttribute("moduleDatabases", infraService.getModuleDatabases(id));
+        model.addAttribute("servers", infraService.getAllServers());
+        model.addAttribute("credentials", infraService.getAllCredentials());
         model.addAttribute("activePage", "infrastructure");
         return "infrastructure/module-form";
     }
@@ -94,6 +97,23 @@ public class InfrastructureController {
     public String deleteModule(@PathVariable Integer id) {
         infraService.deleteModule(id);
         return "redirect:/infrastructure/modules";
+    }
+
+    @PostMapping("/modules/{id}/databases/save")
+    public String addModuleDatabase(@PathVariable Integer id,
+                                     @RequestParam(required = false) Integer databaseServerId,
+                                     @RequestParam(required = false) Integer databaseCredentialId,
+                                     @RequestParam String databaseName,
+                                     @RequestParam(required = false) String databaseAlias) {
+        infraService.addModuleDatabase(id, databaseServerId, databaseCredentialId, databaseName, databaseAlias);
+        return "redirect:/infrastructure/modules/" + id + "/edit";
+    }
+
+    @PostMapping("/module-databases/{id}/delete")
+    public String deleteModuleDatabase(@PathVariable Integer id,
+                                        @RequestParam Integer moduleId) {
+        infraService.deleteModuleDatabase(id);
+        return "redirect:/infrastructure/modules/" + moduleId + "/edit";
     }
 
     // --- Database Servers ---
