@@ -2,8 +2,6 @@ package com.company.aaamanagement.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,10 +13,6 @@ public class DbInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DbInfoId")
     private Integer dbInfoId;
-
-    @JdbcTypeCode(SqlTypes.BINARY)
-    @Column(name = "RowVersion", insertable = false, updatable = false)
-    private byte[] rowVersion;
 
     @Column(name = "VersionUtc", nullable = false, unique = true)
     private LocalDateTime versionUtc;

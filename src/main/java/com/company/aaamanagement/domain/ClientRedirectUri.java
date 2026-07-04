@@ -2,8 +2,6 @@ package com.company.aaamanagement.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "ClientRedirectUris", schema = "aaa",
@@ -15,10 +13,6 @@ public class ClientRedirectUri {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ClientRedirectUriId")
     private Integer clientRedirectUriId;
-
-    @JdbcTypeCode(SqlTypes.BINARY)
-    @Column(name = "RowVersion", insertable = false, updatable = false)
-    private byte[] rowVersion;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ClientId", nullable = false)
