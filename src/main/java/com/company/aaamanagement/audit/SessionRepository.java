@@ -18,7 +18,7 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
            "(:open IS NULL OR s.open = :open) AND " +
            "(:from IS NULL OR s.openedAtUtc >= :from) AND " +
            "(:to IS NULL OR s.openedAtUtc <= :to)")
-    @EntityGraph(attributePaths = {"user", "client"})
+    @EntityGraph(attributePaths = {"user"})
     Page<Session> findByFilters(@Param("userId") Integer userId,
                                  @Param("open") Boolean open,
                                  @Param("from") LocalDateTime from,

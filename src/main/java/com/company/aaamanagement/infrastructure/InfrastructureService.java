@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,13 +22,9 @@ public class InfrastructureService {
 
     private final ProjectRepository projectRepository;
     private final ModuleRepository moduleRepository;
-    private final ClientRepository clientRepository;
-    private final ClientModuleRepository clientModuleRepository;
-    private final ClientRedirectUriRepository redirectUriRepository;
     private final DatabaseServerRepository serverRepository;
     private final DatabaseCredentialRepository credentialRepository;
     private final ModuleDatabaseRepository moduleDatabaseRepository;
-    private final PasswordEncoder passwordEncoder;
     private final CryptoService cryptoService;
 
     // --- Projects ---
@@ -76,98 +71,6 @@ public class InfrastructureService {
     @Transactional
     public void deleteModule(Integer id) {
         moduleRepository.deleteById(id);
-    }
-
-    // --- Clients ---
-    public Page<Client> listClients(String search, int page, int size) {
-        return clientRepository.findBySearch(search, PageRequest.of(page, size, Sort.by("name")));
-    }
-
-    public Client findClientById(Integer id) {
-        return clientRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("İstemci bulunamadı: " + id));
-    }
-
-    @Transactional
-    public Client saveClient(Client form, String clientSecret) {
-        boolean isNew = form.getClientId() == null;
-        boolean nameTaken = isNew
-                ? clientRepository.existsByName(form.getName())
-                : clientRepository.existsByNameAndClientIdNot(form.getName(), form.getClientId());
-        if (nameTaken) {
-            throw new IllegalArgumentException("Bu istemci adı zaten kullanılıyor: " + form.getName());
-        }
-
-        Client client;
-        if (isNew) {
-            client = form;
-        } else {
-            // secret hash gibi form dışı alanları korumak için mevcut kayda merge et
-            client = findClientById(form.getClientId());
-            client.setName(form.getName());
-            client.setActive(form.isActive());
-            client.setAllowedGrantTypes(form.getAllowedGrantTypes());
-            client.setAccessTokenLifetimeSeconds(form.getAccessTokenLifetimeSeconds());
-            client.setRefreshTokenLifetimeSeconds(form.getRefreshTokenLifetimeSeconds());
-        }
-        if (clientSecret != null && !clientSecret.isBlank()) {
-            client.setClientSecretHash(passwordEncoder.encode(clientSecret));
-        }
-        client.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
-        return clientRepository.save(client);
-    }
-
-    public List<ClientRedirectUri> getRedirectUris(Integer clientId) {
-        return redirectUriRepository.findByClient_ClientIdOrderByRedirectUriAsc(clientId);
-    }
-
-    @Transactional
-    public ClientRedirectUri addRedirectUri(Integer clientId, String redirectUri) {
-        if (redirectUri == null || redirectUri.isBlank()) {
-            throw new IllegalArgumentException("Redirect URI boş olamaz.");
-        }
-        String trimmed = redirectUri.trim();
-        if (redirectUriRepository.existsByClient_ClientIdAndRedirectUri(clientId, trimmed)) {
-            throw new IllegalArgumentException("Bu redirect URI istemcide zaten tanımlı: " + trimmed);
-        }
-        Client client = findClientById(clientId);
-        return redirectUriRepository.save(
-                ClientRedirectUri.builder().client(client).redirectUri(trimmed).build());
-    }
-
-    @Transactional
-    public void deleteRedirectUri(Integer id) {
-        redirectUriRepository.deleteById(id);
-    }
-
-    @Transactional
-    public void deleteClient(Integer id) {
-        clientRepository.deleteById(id);
-    }
-
-    public List<ClientModule> getClientModules(Integer clientId) {
-        return clientModuleRepository.findByClient_ClientId(clientId);
-    }
-
-    public List<Module> getAllModules() {
-        return moduleRepository.findAllByOrderByNameAsc();
-    }
-
-    @Transactional
-    public void syncClientModules(Integer clientId, List<Integer> moduleIds) {
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new EntityNotFoundException("İstemci bulunamadı: " + clientId));
-        List<ClientModule> existing = clientModuleRepository.findByClient_ClientId(clientId);
-        existing.stream()
-                .filter(cm -> !moduleIds.contains(cm.getModule().getModuleId()))
-                .forEach(clientModuleRepository::delete);
-        moduleIds.stream()
-                .filter(mid -> existing.stream().noneMatch(cm -> cm.getModule().getModuleId().equals(mid)))
-                .forEach(mid -> {
-                    Module module = moduleRepository.findById(mid)
-                            .orElseThrow(() -> new EntityNotFoundException("Modül bulunamadı: " + mid));
-                    clientModuleRepository.save(ClientModule.builder().client(client).module(module).build());
-                });
     }
 
     // --- Database Servers ---

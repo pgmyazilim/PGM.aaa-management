@@ -1,6 +1,6 @@
 USE [AAA]
 GO
-/****** Object:  Table [aaa].[ActionConstraintGroupValue]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[ActionConstraintGroupValue]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -27,7 +27,7 @@ CONSTRAINT [UQ_ActionConstraintGroupValue] UNIQUE NONCLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [aaa].[ActionConstraints]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[ActionConstraints]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -59,7 +59,7 @@ CONSTRAINT [UQ_ActionConstraints_Name_Action] UNIQUE NONCLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [aaa].[ActionLogs]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[ActionLogs]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -81,7 +81,7 @@ CONSTRAINT [PK_ActionLogs] PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [aaa].[Actions]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[Actions]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -114,76 +114,7 @@ CONSTRAINT [UQ_Actions_ModuleId_Name] UNIQUE NONCLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [aaa].[ClientModules]    Script Date: 04/07/2026 10:38:24 am ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [aaa].[ClientModules](
-[ClientModuleId] [int] IDENTITY(1,1) NOT NULL,
-[ClientId] [int] NOT NULL,
-[ModuleId] [int] NOT NULL,
-[RowVersion] [timestamp] NOT NULL,
-[CreatedAtUtc] [datetime2](7) NOT NULL,
-CONSTRAINT [PK_ClientModules] PRIMARY KEY CLUSTERED
-(
-[ClientModuleId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
-CONSTRAINT [UQ_ClientModules_Client_Module] UNIQUE NONCLUSTERED
-(
-[ClientId] ASC,
-[ModuleId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [aaa].[ClientRedirectUris]    Script Date: 04/07/2026 10:38:24 am ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [aaa].[ClientRedirectUris](
-[ClientRedirectUriId] [int] IDENTITY(1,1) NOT NULL,
-[ClientId] [int] NOT NULL,
-[RedirectUri] [nvarchar](400) NOT NULL,
-[CreatedAtUtc] [datetime2](7) NOT NULL,
-CONSTRAINT [PK_ClientRedirectUris] PRIMARY KEY CLUSTERED
-(
-[ClientRedirectUriId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
-CONSTRAINT [UQ_ClientRedirectUris_Client_Uri] UNIQUE NONCLUSTERED
-(
-[ClientId] ASC,
-[RedirectUri] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [aaa].[Clients]    Script Date: 04/07/2026 10:38:24 am ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [aaa].[Clients](
-[ClientId] [int] IDENTITY(1,1) NOT NULL,
-[ModifiedAtUtc] [datetime2](7) NOT NULL,
-[Name] [nvarchar](200) NOT NULL,
-[RowVersion] [timestamp] NOT NULL,
-[CreatedAtUtc] [datetime2](7) NOT NULL,
-[ClientSecretHash] [nvarchar](200) NULL,
-[IsActive] [bit] NOT NULL,
-[AllowedGrantTypes] [nvarchar](200) NULL,
-[AccessTokenLifetimeSeconds] [int] NOT NULL,
-[RefreshTokenLifetimeSeconds] [int] NOT NULL,
-CONSTRAINT [PK_Clients] PRIMARY KEY CLUSTERED
-(
-[ClientId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
-CONSTRAINT [UQ_Clients_Name] UNIQUE NONCLUSTERED
-(
-[Name] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [aaa].[DatabaseCredentials]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[DatabaseCredentials]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -202,7 +133,7 @@ CONSTRAINT [PK_DatabaseCredential] PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [aaa].[DatabaseServers]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[DatabaseServers]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -222,7 +153,7 @@ CONSTRAINT [PK_DatabaseServer] PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [aaa].[DbInfo]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[DbInfo]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -241,7 +172,7 @@ CONSTRAINT [UQ_DbInfo_VersionUtc] UNIQUE NONCLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [aaa].[GroupActionPermission]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[GroupActionPermission]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -268,7 +199,7 @@ CONSTRAINT [UQ_GroupActionPermission_Action_Group] UNIQUE NONCLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [aaa].[Modules]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[Modules]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -286,7 +217,7 @@ CONSTRAINT [PK_Module] PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [aaa].[ModulesDatabases]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[ModulesDatabases]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -307,7 +238,7 @@ CONSTRAINT [PK_ModuleDatabase] PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [aaa].[Projects]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[Projects]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -324,7 +255,7 @@ CONSTRAINT [PK_Project] PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [aaa].[RecordAudits]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[RecordAudits]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -348,7 +279,7 @@ CONSTRAINT [PK_RecordAudit] PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [aaa].[Sessions]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[Sessions]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -366,7 +297,6 @@ CREATE TABLE [aaa].[Sessions](
 [ClientMacAddress] [nvarchar](34) NULL,
 [ExtraInfo] [nvarchar](max) NULL,
 [RowVersion] [timestamp] NOT NULL,
-[ClientId] [int] NULL,
 [ExpiresAtUtc] [datetime2](7) NULL,
 [LastActivityUtc] [datetime2](7) NULL,
 CONSTRAINT [PK_Session] PRIMARY KEY CLUSTERED
@@ -379,7 +309,7 @@ CONSTRAINT [UQ_Session_SessionKey] UNIQUE NONCLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [aaa].[Settings]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[Settings]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -402,7 +332,7 @@ CONSTRAINT [UQ_Setting_SettingKey] UNIQUE NONCLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [aaa].[SettingValues]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[SettingValues]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -422,7 +352,7 @@ CONSTRAINT [PK_SettingValue] PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [aaa].[TrackedTables]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[TrackedTables]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -446,7 +376,7 @@ CONSTRAINT [UQ_TrackedTable_Name] UNIQUE NONCLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [aaa].[UserGroupMembers]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[UserGroupMembers]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -466,7 +396,7 @@ CONSTRAINT [UQ_UserGroupMember_User_Group] UNIQUE NONCLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [aaa].[UserGroups]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[UserGroups]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -488,7 +418,7 @@ CONSTRAINT [UQ_UserGroup_Name] UNIQUE NONCLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [aaa].[Users]    Script Date: 04/07/2026 10:38:24 am ******/
+/****** Object:  Table [aaa].[Users]    Script Date: 04/07/2026 11:22:40 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -546,18 +476,6 @@ GO
 ALTER TABLE [aaa].[ActionLogs] ADD  CONSTRAINT [DF_ActionLogs_OccurredAtUtc]  DEFAULT (sysutcdatetime()) FOR [OccurredAtUtc]
 GO
 ALTER TABLE [aaa].[Actions] ADD  CONSTRAINT [DF_Actions_CreatedAtUtc]  DEFAULT (sysutcdatetime()) FOR [CreatedAtUtc]
-GO
-ALTER TABLE [aaa].[ClientModules] ADD  CONSTRAINT [DF_ClientModules_CreatedAtUtc]  DEFAULT (sysutcdatetime()) FOR [CreatedAtUtc]
-GO
-ALTER TABLE [aaa].[ClientRedirectUris] ADD  CONSTRAINT [DF_ClientRedirectUris_CreatedAtUtc]  DEFAULT (sysutcdatetime()) FOR [CreatedAtUtc]
-GO
-ALTER TABLE [aaa].[Clients] ADD  CONSTRAINT [DF_Clients_CreatedAtUtc]  DEFAULT (sysutcdatetime()) FOR [CreatedAtUtc]
-GO
-ALTER TABLE [aaa].[Clients] ADD  CONSTRAINT [DF_Clients_IsActive]  DEFAULT ((1)) FOR [IsActive]
-GO
-ALTER TABLE [aaa].[Clients] ADD  CONSTRAINT [DF_Clients_AccessTokenLifetime]  DEFAULT ((3600)) FOR [AccessTokenLifetimeSeconds]
-GO
-ALTER TABLE [aaa].[Clients] ADD  CONSTRAINT [DF_Clients_RefreshTokenLifetime]  DEFAULT ((1209600)) FOR [RefreshTokenLifetimeSeconds]
 GO
 ALTER TABLE [aaa].[DatabaseCredentials] ADD  CONSTRAINT [DF_DatabaseCredentials_CreatedAtUtc]  DEFAULT (sysutcdatetime()) FOR [CreatedAtUtc]
 GO
@@ -630,21 +548,6 @@ REFERENCES [aaa].[Modules] ([ModuleId])
 GO
 ALTER TABLE [aaa].[Actions] CHECK CONSTRAINT [FK_Actions_Module]
 GO
-ALTER TABLE [aaa].[ClientModules]  WITH CHECK ADD  CONSTRAINT [FK_ClientModules_Client] FOREIGN KEY([ClientId])
-REFERENCES [aaa].[Clients] ([ClientId])
-GO
-ALTER TABLE [aaa].[ClientModules] CHECK CONSTRAINT [FK_ClientModules_Client]
-GO
-ALTER TABLE [aaa].[ClientModules]  WITH CHECK ADD  CONSTRAINT [FK_ClientModules_Module] FOREIGN KEY([ModuleId])
-REFERENCES [aaa].[Modules] ([ModuleId])
-GO
-ALTER TABLE [aaa].[ClientModules] CHECK CONSTRAINT [FK_ClientModules_Module]
-GO
-ALTER TABLE [aaa].[ClientRedirectUris]  WITH CHECK ADD  CONSTRAINT [FK_ClientRedirectUris_Client] FOREIGN KEY([ClientId])
-REFERENCES [aaa].[Clients] ([ClientId])
-GO
-ALTER TABLE [aaa].[ClientRedirectUris] CHECK CONSTRAINT [FK_ClientRedirectUris_Client]
-GO
 ALTER TABLE [aaa].[DatabaseCredentials]  WITH CHECK ADD  CONSTRAINT [FK_DatabaseCredential_DatabaseServer] FOREIGN KEY([DatabaseServerId])
 REFERENCES [aaa].[DatabaseServers] ([DatabaseServerId])
 GO
@@ -699,11 +602,6 @@ ALTER TABLE [aaa].[RecordAudits]  WITH CHECK ADD  CONSTRAINT [FK_RecordAudit_Tra
 REFERENCES [aaa].[TrackedTables] ([TrackedTableId])
 GO
 ALTER TABLE [aaa].[RecordAudits] CHECK CONSTRAINT [FK_RecordAudit_TrackedTable]
-GO
-ALTER TABLE [aaa].[Sessions]  WITH CHECK ADD  CONSTRAINT [FK_Session_Client] FOREIGN KEY([ClientId])
-REFERENCES [aaa].[Clients] ([ClientId])
-GO
-ALTER TABLE [aaa].[Sessions] CHECK CONSTRAINT [FK_Session_Client]
 GO
 ALTER TABLE [aaa].[Sessions]  WITH CHECK ADD  CONSTRAINT [FK_Session_User] FOREIGN KEY([UserId])
 REFERENCES [aaa].[Users] ([UserId])

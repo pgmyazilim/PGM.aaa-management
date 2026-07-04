@@ -8,8 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Controller
 @RequestMapping("/infrastructure")
 @RequiredArgsConstructor
@@ -96,72 +94,6 @@ public class InfrastructureController {
     public String deleteModule(@PathVariable Integer id) {
         infraService.deleteModule(id);
         return "redirect:/infrastructure/modules";
-    }
-
-    // --- Clients ---
-    @GetMapping("/clients")
-    public String clients(@RequestParam(required = false) String search,
-                           @RequestParam(defaultValue = "0") int page,
-                           @RequestParam(defaultValue = "20") int size,
-                           Model model) {
-        model.addAttribute("clients", infraService.listClients(search, page, size));
-        model.addAttribute("search", search);
-        model.addAttribute("activePage", "infrastructure");
-        return "infrastructure/clients";
-    }
-
-    @GetMapping("/clients/new")
-    public String newClient(Model model) {
-        Client client = new Client();
-        client.setActive(true);
-        model.addAttribute("client", client);
-        model.addAttribute("activePage", "infrastructure");
-        return "infrastructure/client-form";
-    }
-
-    @GetMapping("/clients/{id}/edit")
-    public String editClient(@PathVariable Integer id, Model model) {
-        Client client = infraService.findClientById(id);
-        model.addAttribute("client", client);
-        model.addAttribute("clientModules", infraService.getClientModules(id));
-        model.addAttribute("allModules", infraService.getAllModules());
-        model.addAttribute("redirectUris", infraService.getRedirectUris(id));
-        model.addAttribute("activePage", "infrastructure");
-        return "infrastructure/client-form";
-    }
-
-    @PostMapping("/clients/save")
-    public String saveClient(@ModelAttribute Client client,
-                             @RequestParam(required = false) String clientSecret) {
-        infraService.saveClient(client, clientSecret);
-        return "redirect:/infrastructure/clients";
-    }
-
-    @PostMapping("/clients/{id}/redirect-uris/add")
-    public String addRedirectUri(@PathVariable Integer id,
-                                 @RequestParam String redirectUri) {
-        infraService.addRedirectUri(id, redirectUri);
-        return "redirect:/infrastructure/clients/" + id + "/edit";
-    }
-
-    @PostMapping("/redirect-uris/{id}/delete")
-    public String deleteRedirectUri(@PathVariable Integer id,
-                                    @RequestParam Integer clientId) {
-        infraService.deleteRedirectUri(id);
-        return "redirect:/infrastructure/clients/" + clientId + "/edit";
-    }
-
-    @PostMapping("/clients/{id}/delete")
-    public String deleteClient(@PathVariable Integer id) {
-        infraService.deleteClient(id);
-        return "redirect:/infrastructure/clients";
-    }
-
-    @PostMapping("/clients/{id}/modules/sync")
-    public String syncClientModules(@PathVariable Integer id,
-                                     @RequestParam(required = false) List<Integer> moduleIds) {
-        infraService.syncClientModules(id, moduleIds == null ? List.of() : moduleIds);
-        return "redirect:/infrastructure/clients/" + id + "/edit";
     }
 
     // --- Database Servers ---
