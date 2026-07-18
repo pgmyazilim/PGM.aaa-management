@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>İzlenen Tablolar - AAA Yönetim</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div th:replace="~{layout/sidebar :: sidebar('tracked-tables')}"></div>
+    <main class="flex-1 overflow-y-auto p-6">
+        <div class="flex items-center gap-4 mb-5">
+            <h1 class="text-xl font-bold text-slate-800">İzlenen Tablolar</h1>
+            <div class="ml-auto">
+                <a th:href="@{/audit/tracked-tables/new}"
+                   class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">+ Yeni Tablo</a>
+            </div>
+        </div>
+        <div th:if="${error}" class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm"
+             th:text="${error}">Hata</div>
+        <form method="get" th:action="@{/audit/tracked-tables}" class="mb-4 flex gap-2">
+            <input type="text" name="search" th:value="${search}" placeholder="Tablo adı..."
+                   class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none w-72"/>
+            <button type="submit" class="bg-slate-700 text-white px-4 py-2 rounded text-sm hover:bg-slate-800">Ara</button>
+        </form>
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-slate-800 text-white">
+                <tr>
+                    <th class="px-4 py-3 text-left">Tablo Adı</th>
+                    <th class="px-4 py-3 text-left">Actor Tipleri</th>
+                    <th class="px-4 py-3 text-left">Record Tipleri</th>
+                    <th class="px-4 py-3 text-left">Son Güncelleme</th>
+                    <th class="px-4 py-3 text-center">İşlem</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="t, stat : ${trackedTables.content}"
+                    th:classappend="${stat.odd} ? 'bg-white' : 'bg-slate-50'"
+                    class="border-b border-slate-100">
+                    <td class="px-4 py-2 font-mono text-sm" th:text="${t.name}">tablo</td>
+                    <td class="px-4 py-2 text-xs text-slate-500 font-mono" th:text="${t.actorTrackingTypes} ?: '—'">—</td>
+                    <td class="px-4 py-2 text-xs text-slate-500 font-mono" th:text="${t.recordTrackingTypes} ?: '—'">—</td>
+                    <td class="px-4 py-2 text-xs text-slate-500"
+                        th:text="${#temporals.format(t.modifiedAtUtc, 'dd.MM.yyyy HH:mm')}">—</td>
+                    <td class="px-4 py-2 text-center space-x-2">
+                        <a th:href="@{/audit/tracked-tables/{id}/edit(id=${t.trackedTableId})}"
+                           class="text-blue-600 hover:underline text-xs">Düzenle</a>
+                        <form th:action="@{/audit/tracked-tables/{id}/delete(id=${t.trackedTableId})}" method="post"
+                              class="inline" onsubmit="return confirm('Silinsin mi?')">
+                            <button type="submit" class="text-red-500 hover:underline text-xs">Sil</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${trackedTables.content.empty}">
+                    <td colspan="5" class="px-4 py-8 text-center text-slate-400">Kayıt bulunamadı.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+</body>
+</html>
