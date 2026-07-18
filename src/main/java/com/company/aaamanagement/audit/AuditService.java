@@ -9,6 +9,7 @@ import com.company.aaamanagement.domain.Session;
 import com.company.aaamanagement.domain.TrackedTable;
 import com.company.aaamanagement.domain.User;
 import com.company.aaamanagement.user.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -65,5 +66,10 @@ public class AuditService {
 
     public List<User> getAllUsersForFilter() {
         return userRepository.findAll(Sort.by("lastName", "firstName"));
+    }
+
+    public RecordAudit findRecordAuditById(Long id) {
+        return recordAuditRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Kayıt denetimi bulunamadı: " + id));
     }
 }

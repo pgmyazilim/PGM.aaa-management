@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Kayıt Denetimi Detayı - AAA Yönetim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div th:replace="~{layout/sidebar :: sidebar('record-audits')}"></div>
+    <main class="flex-1 overflow-y-auto p-6">
+        <div class="max-w-3xl mx-auto space-y-6">
+            <div class="flex items-center gap-3">
+                <a th:href="@{/audit/record-audits}" class="text-slate-500 hover:text-slate-700 text-sm">← Kayıt Denetimi</a>
+                <h1 class="text-xl font-bold text-slate-800">Kayıt Denetimi Detayı</h1>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="font-semibold text-slate-700 mb-4">Genel Bilgiler</h2>
+                <dl class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <dt class="text-xs font-semibold text-slate-500">Tablo</dt>
+                        <dd class="font-mono" th:text="${audit.trackedTable.name}">Tablo</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold text-slate-500">Kayıt ID</dt>
+                        <dd class="font-mono text-slate-600" th:text="${audit.recordId}">0</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold text-slate-500">Operasyon</dt>
+                        <dd>
+                            <span class="font-bold text-xs px-2 py-0.5 rounded"
+                                  th:text="${audit.operationType}"
+                                  th:classappend="${audit.operationType.name() == 'I'} ? 'bg-green-100 text-green-700' :
+                                                 (${audit.operationType.name() == 'U'} ? 'bg-yellow-100 text-yellow-700' :
+                                                 (${audit.operationType.name() == 'D'} ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'))">I</span>
+                        </dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold text-slate-500">Aktör</dt>
+                        <dd th:text="${audit.actorUser.fullName}">Kullanıcı</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold text-slate-500">Oturum</dt>
+                        <dd class="font-mono text-xs text-slate-500"
+                            th:text="${audit.session != null} ? ${audit.session.sessionKey} : '—'">—</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold text-slate-500">Tarih (UTC)</dt>
+                        <dd th:text="${#temporals.format(audit.occurredAtUtc, 'dd.MM.yyyy HH:mm:ss')}">—</dd>
+                    </div>
+                </dl>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="font-semibold text-slate-700 mb-2">Kayıt Değerleri</h2>
+                <pre th:if="${audit.recordValues != null}"
+                     class="bg-slate-50 border border-slate-200 rounded p-3 text-xs overflow-x-auto whitespace-pre-wrap"
+                     th:text="${audit.recordValues}">{}</pre>
+                <p th:if="${audit.recordValues == null}" class="text-sm text-slate-400">— Kayıt değeri yok —</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="font-semibold text-slate-700 mb-2">Ek Bilgi</h2>
+                <p th:if="${audit.extraInfo != null}" class="text-sm whitespace-pre-wrap" th:text="${audit.extraInfo}">—</p>
+                <p th:if="${audit.extraInfo == null}" class="text-sm text-slate-400">— Ek bilgi yok —</p>
+            </div>
+
+            <div th:if="${audit.actionLog != null}" class="bg-white rounded-lg shadow p-6">
+                <h2 class="font-semibold text-slate-700 mb-4">İlişkili Aksiyon Logu</h2>
+                <dl class="grid grid-cols-2 gap-4 text-sm mb-4">
+                    <div>
+                        <dt class="text-xs font-semibold text-slate-500">İşlem</dt>
+                        <dd th:text="${audit.actionLog.action.name}">İşlem</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold text-slate-500">Sonuç</dt>
+                        <dd>
+                            <span th:if="${audit.actionLog.success}" class="text-green-600 font-bold text-xs">✓ Başarılı</span>
+                            <span th:unless="${audit.actionLog.success}" class="text-red-500 font-bold text-xs">✗ Başarısız</span>
+                        </dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold text-slate-500">Tarih (UTC)</dt>
+                        <dd th:text="${#temporals.format(audit.actionLog.occurredAtUtc, 'dd.MM.yyyy HH:mm:ss')}">—</dd>
+                    </div>
+                </dl>
+                <div class="mb-3">
+                    <h3 class="text-xs font-semibold text-slate-500 mb-1">Kullanıcı Notu</h3>
+                    <p th:if="${audit.actionLog.userNote != null}" class="text-sm whitespace-pre-wrap" th:text="${audit.actionLog.userNote}">—</p>
+                    <p th:if="${audit.actionLog.userNote == null}" class="text-sm text-slate-400">— Not yok —</p>
+                </div>
+                <div>
+                    <h3 class="text-xs font-semibold text-slate-500 mb-1">Ek Bilgi</h3>
+                    <p th:if="${audit.actionLog.extraInfo != null}" class="text-sm whitespace-pre-wrap" th:text="${audit.actionLog.extraInfo}">—</p>
+                    <p th:if="${audit.actionLog.extraInfo == null}" class="text-sm text-slate-400">— Ek bilgi yok —</p>
+                </div>
+            </div>
+            <div th:if="${audit.actionLog == null}" class="text-sm text-slate-400">— Bağlı aksiyon logu yok —</div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

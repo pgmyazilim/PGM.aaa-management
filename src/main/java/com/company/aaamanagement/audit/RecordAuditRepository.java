@@ -10,8 +10,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface RecordAuditRepository extends JpaRepository<RecordAudit, Long> {
+
+    // detay ekranı trackedTable/actorUser/session/actionLog(+action) alanlarına eriştiği için
+    // birlikte fetch edilir (open-in-view kapalı, aksi halde LazyInitializationException).
+    @Override
+    @EntityGraph(attributePaths = {"trackedTable", "actorUser", "session", "actionLog", "actionLog.action"})
+    Optional<RecordAudit> findById(Long id);
 
     @Query("SELECT r FROM RecordAudit r WHERE " +
            "(:tableId IS NULL OR r.trackedTable.trackedTableId = :tableId) AND " +

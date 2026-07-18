@@ -76,4 +76,11 @@ public class AuditController {
         model.addAttribute("activePage", "record-audits");
         return "audit/record-audits";
     }
+
+    @GetMapping("/record-audits/{id}")
+    public String recordAuditDetail(@PathVariable Long id, Model model) {
+        model.addAttribute("audit", auditService.findRecordAuditById(id));
+        model.addAttribute("activePage", "record-audits");
+        return "audit/record-audit-detail";
+    }
 }

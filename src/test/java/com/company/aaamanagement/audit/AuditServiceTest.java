@@ -3,8 +3,10 @@ package com.company.aaamanagement.audit;
 import com.company.aaamanagement.action.ActionRepository;
 import com.company.aaamanagement.domain.Action;
 import com.company.aaamanagement.domain.OperationType;
+import com.company.aaamanagement.domain.RecordAudit;
 import com.company.aaamanagement.domain.User;
 import com.company.aaamanagement.user.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -18,8 +20,10 @@ import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -81,5 +85,21 @@ class AuditServiceTest {
         when(userRepository.findAll(Sort.by("lastName", "firstName"))).thenReturn(users);
 
         assertThat(service.getAllUsersForFilter()).isSameAs(users);
+    }
+
+    @Test
+    void findRecordAuditById_whenFound_returnsIt() {
+        RecordAudit audit = RecordAudit.builder().recordAuditId(5L).build();
+        when(recordAuditRepository.findById(5L)).thenReturn(Optional.of(audit));
+
+        assertThat(service.findRecordAuditById(5L)).isSameAs(audit);
+    }
+
+    @Test
+    void findRecordAuditById_whenMissing_throwsEntityNotFound() {
+        when(recordAuditRepository.findById(9L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.findRecordAuditById(9L))
+                .isInstanceOf(EntityNotFoundException.class);
     }
 }
