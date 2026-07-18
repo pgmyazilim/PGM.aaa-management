@@ -23,6 +23,9 @@ public interface ActionRepository extends JpaRepository<Action, Integer> {
 
     List<Action> findByModule_ModuleIdOrderByNameAsc(Integer moduleId);
 
+    @EntityGraph(attributePaths = "module")
+    List<Action> findAllByOrderByNameAsc();
+
     @Query("SELECT a FROM Action a JOIN FETCH a.module " +
            "WHERE a.actionId NOT IN " +
            "(SELECT p.action.actionId FROM GroupActionPermission p " +

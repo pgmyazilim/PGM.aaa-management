@@ -1,11 +1,13 @@
 package com.company.aaamanagement.audit;
 
 import com.company.aaamanagement.action.ActionRepository;
+import com.company.aaamanagement.domain.Action;
 import com.company.aaamanagement.domain.ActionLog;
 import com.company.aaamanagement.domain.OperationType;
 import com.company.aaamanagement.domain.RecordAudit;
 import com.company.aaamanagement.domain.Session;
 import com.company.aaamanagement.domain.TrackedTable;
+import com.company.aaamanagement.domain.User;
 import com.company.aaamanagement.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,11 +30,11 @@ public class AuditService {
     private final ActionRepository actionRepository;
     private final UserRepository userRepository;
 
-    public Page<ActionLog> listActionLogs(Integer actionId, Boolean success,
+    public Page<ActionLog> listActionLogs(Integer actionId, Integer actorUserId, Boolean success, String search,
                                            LocalDateTime from, LocalDateTime to,
                                            int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "occurredAtUtc"));
-        return actionLogRepository.findByFilters(actionId, success, from, to, pageable);
+        return actionLogRepository.findByFilters(actionId, actorUserId, success, search, from, to, pageable);
     }
 
     public Page<Session> listSessions(Integer userId, Boolean open,
@@ -42,11 +44,11 @@ public class AuditService {
         return sessionRepository.findByFilters(userId, open, from, to, pageable);
     }
 
-    public Page<RecordAudit> listRecordAudits(Integer tableId, OperationType opType,
-                                               LocalDateTime from, LocalDateTime to,
+    public Page<RecordAudit> listRecordAudits(Integer tableId, Integer actorUserId, OperationType opType,
+                                               String search, LocalDateTime from, LocalDateTime to,
                                                int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "occurredAtUtc"));
-        return recordAuditRepository.findByFilters(tableId, opType, from, to, pageable);
+        return recordAuditRepository.findByFilters(tableId, actorUserId, opType, search, from, to, pageable);
     }
 
     public List<TrackedTable> getAllTrackedTables() {
@@ -55,5 +57,13 @@ public class AuditService {
 
     public OperationType[] getOperationTypes() {
         return OperationType.values();
+    }
+
+    public List<Action> getAllActions() {
+        return actionRepository.findAllByOrderByNameAsc();
+    }
+
+    public List<User> getAllUsersForFilter() {
+        return userRepository.findAll(Sort.by("lastName", "firstName"));
     }
 }
