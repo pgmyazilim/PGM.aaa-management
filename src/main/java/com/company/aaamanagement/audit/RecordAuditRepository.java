@@ -24,4 +24,6 @@ public interface RecordAuditRepository extends JpaRepository<RecordAudit, Long> 
                                      @Param("from") LocalDateTime from,
                                      @Param("to") LocalDateTime to,
                                      Pageable pageable);
+
+    boolean existsByTrackedTable_TrackedTableId(Integer trackedTableId);
 }
