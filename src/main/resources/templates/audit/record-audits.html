@@ -59,8 +59,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="r, stat : ${audits.content}"
-                    th:with="detailUrl=@{/audit/record-audits/{id}(id=${r.recordAuditId})}"
-                    th:onclick="|location.href='${detailUrl}'|"
+                    th:attr="data-href=@{/audit/record-audits/{id}(id=${r.recordAuditId})}"
                     th:classappend="${stat.odd} ? 'bg-white' : 'bg-slate-50'"
                     class="border-b border-slate-100 cursor-pointer hover:bg-blue-50 transition-colors">
                     <td class="px-4 py-2 text-xs font-mono" th:text="${r.trackedTable.name}">Tablo</td>
@@ -94,5 +93,10 @@
         </div>
     </main>
 </div>
+<script>
+    document.querySelectorAll('tbody tr[data-href]').forEach(function (row) {
+        row.addEventListener('click', function () { window.location.href = row.dataset.href; });
+    });
+</script>
 </body>
 </html>
