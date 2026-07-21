@@ -35,21 +35,23 @@ public class AuditService {
                                            LocalDateTime from, LocalDateTime to,
                                            int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "occurredAtUtc"));
-        return actionLogRepository.findByFilters(actionId, actorUserId, success, from, to, pageable);
+        return actionLogRepository.findAll(
+                ActionLogSpecifications.filters(actionId, actorUserId, success, from, to), pageable);
     }
 
     public Page<Session> listSessions(Integer userId, Boolean open,
                                        LocalDateTime from, LocalDateTime to,
                                        int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "openedAtUtc"));
-        return sessionRepository.findByFilters(userId, open, from, to, pageable);
+        return sessionRepository.findAll(SessionSpecifications.filters(userId, open, from, to), pageable);
     }
 
     public Page<RecordAudit> listRecordAudits(Integer tableId, Integer actorUserId, OperationType opType,
                                                LocalDateTime from, LocalDateTime to,
                                                int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "occurredAtUtc"));
-        return recordAuditRepository.findByFilters(tableId, actorUserId, opType, from, to, pageable);
+        return recordAuditRepository.findAll(
+                RecordAuditSpecifications.filters(tableId, actorUserId, opType, from, to), pageable);
     }
 
     public List<TrackedTable> getAllTrackedTables() {

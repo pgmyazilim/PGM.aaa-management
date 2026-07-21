@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +26,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,33 +41,31 @@ class AuditServiceTest {
     @InjectMocks AuditService service;
 
     @Test
-    void listActionLogs_passesAllFiltersAndSortsByOccurredAtDesc() {
+    void listActionLogs_delegatesToSpecificationAndSortsByOccurredAtDesc() {
         LocalDateTime from = LocalDateTime.of(2026, 1, 1, 0, 0);
         LocalDateTime to = LocalDateTime.of(2026, 1, 31, 23, 59);
-        when(actionLogRepository.findByFilters(any(), any(), any(), any(), any(), any()))
+        when(actionLogRepository.findAll(any(Specification.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of()));
 
         service.listActionLogs(3, 7, true, from, to, 0, 50);
 
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
-        verify(actionLogRepository).findByFilters(eq(3), eq(7), eq(true), eq(from), eq(to),
-                pageableCaptor.capture());
+        verify(actionLogRepository).findAll(any(Specification.class), pageableCaptor.capture());
         assertThat(pageableCaptor.getValue().getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "occurredAtUtc"));
         assertThat(pageableCaptor.getValue().getPageSize()).isEqualTo(50);
     }
 
     @Test
-    void listRecordAudits_passesAllFiltersAndSortsByOccurredAtDesc() {
+    void listRecordAudits_delegatesToSpecificationAndSortsByOccurredAtDesc() {
         LocalDateTime from = LocalDateTime.of(2026, 1, 1, 0, 0);
         LocalDateTime to = LocalDateTime.of(2026, 1, 31, 23, 59);
-        when(recordAuditRepository.findByFilters(any(), any(), any(), any(), any(), any()))
+        when(recordAuditRepository.findAll(any(Specification.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of()));
 
         service.listRecordAudits(2, 9, OperationType.U, from, to, 0, 50);
 
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
-        verify(recordAuditRepository).findByFilters(eq(2), eq(9), eq(OperationType.U), eq(from), eq(to),
-                pageableCaptor.capture());
+        verify(recordAuditRepository).findAll(any(Specification.class), pageableCaptor.capture());
         assertThat(pageableCaptor.getValue().getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "occurredAtUtc"));
     }
 
