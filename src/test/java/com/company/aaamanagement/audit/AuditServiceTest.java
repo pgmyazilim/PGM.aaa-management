@@ -44,13 +44,13 @@ class AuditServiceTest {
     void listActionLogs_passesAllFiltersAndSortsByOccurredAtDesc() {
         LocalDateTime from = LocalDateTime.of(2026, 1, 1, 0, 0);
         LocalDateTime to = LocalDateTime.of(2026, 1, 31, 23, 59);
-        when(actionLogRepository.findByFilters(any(), any(), any(), any(), any(), any(), any()))
+        when(actionLogRepository.findByFilters(any(), any(), any(), any(), any(), any()))
                 .thenReturn(new PageImpl<>(List.of()));
 
-        service.listActionLogs(3, 7, true, "kilit", from, to, 0, 50);
+        service.listActionLogs(3, 7, true, from, to, 0, 50);
 
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
-        verify(actionLogRepository).findByFilters(eq(3), eq(7), eq(true), eq("kilit"), eq(from), eq(to),
+        verify(actionLogRepository).findByFilters(eq(3), eq(7), eq(true), eq(from), eq(to),
                 pageableCaptor.capture());
         assertThat(pageableCaptor.getValue().getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "occurredAtUtc"));
         assertThat(pageableCaptor.getValue().getPageSize()).isEqualTo(50);
@@ -60,13 +60,13 @@ class AuditServiceTest {
     void listRecordAudits_passesAllFiltersAndSortsByOccurredAtDesc() {
         LocalDateTime from = LocalDateTime.of(2026, 1, 1, 0, 0);
         LocalDateTime to = LocalDateTime.of(2026, 1, 31, 23, 59);
-        when(recordAuditRepository.findByFilters(any(), any(), any(), any(), any(), any(), any()))
+        when(recordAuditRepository.findByFilters(any(), any(), any(), any(), any(), any()))
                 .thenReturn(new PageImpl<>(List.of()));
 
-        service.listRecordAudits(2, 9, OperationType.U, "hata", from, to, 0, 50);
+        service.listRecordAudits(2, 9, OperationType.U, from, to, 0, 50);
 
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
-        verify(recordAuditRepository).findByFilters(eq(2), eq(9), eq(OperationType.U), eq("hata"), eq(from), eq(to),
+        verify(recordAuditRepository).findByFilters(eq(2), eq(9), eq(OperationType.U), eq(from), eq(to),
                 pageableCaptor.capture());
         assertThat(pageableCaptor.getValue().getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "occurredAtUtc"));
     }

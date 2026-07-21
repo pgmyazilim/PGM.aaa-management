@@ -16,15 +16,12 @@ public interface ActionLogRepository extends JpaRepository<ActionLog, Long> {
            "(:actionId IS NULL OR l.action.actionId = :actionId) AND " +
            "(:actorUserId IS NULL OR l.actorUser.userId = :actorUserId) AND " +
            "(:success IS NULL OR l.success = :success) AND " +
-           "(:search IS NULL OR LOWER(l.userNote) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(l.extraInfo) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
            "(:from IS NULL OR l.occurredAtUtc >= :from) AND " +
            "(:to IS NULL OR l.occurredAtUtc <= :to)")
     @EntityGraph(attributePaths = {"action", "actorUser"})
     Page<ActionLog> findByFilters(@Param("actionId") Integer actionId,
                                    @Param("actorUserId") Integer actorUserId,
                                    @Param("success") Boolean success,
-                                   @Param("search") String search,
                                    @Param("from") LocalDateTime from,
                                    @Param("to") LocalDateTime to,
                                    Pageable pageable);

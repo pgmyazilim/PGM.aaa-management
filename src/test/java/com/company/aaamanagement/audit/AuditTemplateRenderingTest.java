@@ -85,7 +85,6 @@ class AuditTemplateRenderingTest {
                 "trackedTables", List.of(table),
                 "operationTypes", OperationType.values(),
                 "allUsers", List.of(actor),
-                "search", "",
                 "activePage", "record-audits"
         );
 

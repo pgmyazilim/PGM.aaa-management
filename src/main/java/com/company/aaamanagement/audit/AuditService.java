@@ -31,11 +31,11 @@ public class AuditService {
     private final ActionRepository actionRepository;
     private final UserRepository userRepository;
 
-    public Page<ActionLog> listActionLogs(Integer actionId, Integer actorUserId, Boolean success, String search,
+    public Page<ActionLog> listActionLogs(Integer actionId, Integer actorUserId, Boolean success,
                                            LocalDateTime from, LocalDateTime to,
                                            int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "occurredAtUtc"));
-        return actionLogRepository.findByFilters(actionId, actorUserId, success, search, from, to, pageable);
+        return actionLogRepository.findByFilters(actionId, actorUserId, success, from, to, pageable);
     }
 
     public Page<Session> listSessions(Integer userId, Boolean open,
@@ -46,10 +46,10 @@ public class AuditService {
     }
 
     public Page<RecordAudit> listRecordAudits(Integer tableId, Integer actorUserId, OperationType opType,
-                                               String search, LocalDateTime from, LocalDateTime to,
+                                               LocalDateTime from, LocalDateTime to,
                                                int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "occurredAtUtc"));
-        return recordAuditRepository.findByFilters(tableId, actorUserId, opType, search, from, to, pageable);
+        return recordAuditRepository.findByFilters(tableId, actorUserId, opType, from, to, pageable);
     }
 
     public List<TrackedTable> getAllTrackedTables() {

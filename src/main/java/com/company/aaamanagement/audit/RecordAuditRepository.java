@@ -24,14 +24,12 @@ public interface RecordAuditRepository extends JpaRepository<RecordAudit, Long> 
            "(:tableId IS NULL OR r.trackedTable.trackedTableId = :tableId) AND " +
            "(:actorUserId IS NULL OR r.actorUser.userId = :actorUserId) AND " +
            "(:opType IS NULL OR r.operationType = :opType) AND " +
-           "(:search IS NULL OR LOWER(r.extraInfo) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
            "(:from IS NULL OR r.occurredAtUtc >= :from) AND " +
            "(:to IS NULL OR r.occurredAtUtc <= :to)")
     @EntityGraph(attributePaths = {"trackedTable", "actorUser"})
     Page<RecordAudit> findByFilters(@Param("tableId") Integer tableId,
                                      @Param("actorUserId") Integer actorUserId,
                                      @Param("opType") OperationType opType,
-                                     @Param("search") String search,
                                      @Param("from") LocalDateTime from,
                                      @Param("to") LocalDateTime to,
                                      Pageable pageable);

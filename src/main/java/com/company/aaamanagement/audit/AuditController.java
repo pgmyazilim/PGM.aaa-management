@@ -21,19 +21,17 @@ public class AuditController {
     public String actionLogs(@RequestParam(required = false) Integer actionId,
                               @RequestParam(required = false) Integer actorUserId,
                               @RequestParam(required = false) Boolean success,
-                              @RequestParam(required = false) String search,
                               @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
                               @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
                               @RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "50") int size,
                               Model model) {
-        model.addAttribute("logs", auditService.listActionLogs(actionId, actorUserId, success, search, from, to, page, size));
+        model.addAttribute("logs", auditService.listActionLogs(actionId, actorUserId, success, from, to, page, size));
         model.addAttribute("allActions", auditService.getAllActions());
         model.addAttribute("allUsers", auditService.getAllUsersForFilter());
         model.addAttribute("selectedActionId", actionId);
         model.addAttribute("selectedActorUserId", actorUserId);
         model.addAttribute("selectedSuccess", success);
-        model.addAttribute("search", search);
         model.addAttribute("from", from);
         model.addAttribute("to", to);
         model.addAttribute("activePage", "action-logs");
@@ -57,20 +55,18 @@ public class AuditController {
     public String recordAudits(@RequestParam(required = false) Integer tableId,
                                 @RequestParam(required = false) Integer actorUserId,
                                 @RequestParam(required = false) OperationType opType,
-                                @RequestParam(required = false) String search,
                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
                                 @RequestParam(defaultValue = "0") int page,
                                 @RequestParam(defaultValue = "50") int size,
                                 Model model) {
-        model.addAttribute("audits", auditService.listRecordAudits(tableId, actorUserId, opType, search, from, to, page, size));
+        model.addAttribute("audits", auditService.listRecordAudits(tableId, actorUserId, opType, from, to, page, size));
         model.addAttribute("trackedTables", auditService.getAllTrackedTables());
         model.addAttribute("operationTypes", auditService.getOperationTypes());
         model.addAttribute("allUsers", auditService.getAllUsersForFilter());
         model.addAttribute("selectedTableId", tableId);
         model.addAttribute("selectedActorUserId", actorUserId);
         model.addAttribute("selectedOpType", opType);
-        model.addAttribute("search", search);
         model.addAttribute("from", from);
         model.addAttribute("to", to);
         model.addAttribute("activePage", "record-audits");

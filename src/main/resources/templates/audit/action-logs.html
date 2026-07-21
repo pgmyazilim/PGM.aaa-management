@@ -33,8 +33,6 @@
                 <option value="true" th:selected="${selectedSuccess != null and selectedSuccess}">Başarılı</option>
                 <option value="false" th:selected="${selectedSuccess != null and !selectedSuccess}">Başarısız</option>
             </select>
-            <input type="text" name="search" th:value="${search}" placeholder="Not veya ek bilgide ara..."
-                   class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none w-56"/>
             <input type="datetime-local" name="from"
                    th:value="${from != null} ? ${#temporals.format(from, 'yyyy-MM-dd''T''HH:mm')} : ''"
                    class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none"/>
@@ -81,12 +79,12 @@
         </div>
         <div th:if="${logs.totalPages > 1}" class="flex gap-1 mt-4 text-sm">
             <a th:if="${!logs.first}"
-               th:href="@{/audit/action-logs(page=${logs.number - 1}, actionId=${selectedActionId}, actorUserId=${selectedActorUserId}, success=${selectedSuccess}, search=${search}, from=${from}, to=${to})}"
+               th:href="@{/audit/action-logs(page=${logs.number - 1}, actionId=${selectedActionId}, actorUserId=${selectedActorUserId}, success=${selectedSuccess}, from=${from}, to=${to})}"
                class="px-3 py-1 border rounded hover:bg-slate-100">«</a>
             <span class="px-3 py-1 text-slate-500"
                   th:text="${logs.number + 1} + ' / ' + ${logs.totalPages}">1/1</span>
             <a th:if="${!logs.last}"
-               th:href="@{/audit/action-logs(page=${logs.number + 1}, actionId=${selectedActionId}, actorUserId=${selectedActorUserId}, success=${selectedSuccess}, search=${search}, from=${from}, to=${to})}"
+               th:href="@{/audit/action-logs(page=${logs.number + 1}, actionId=${selectedActionId}, actorUserId=${selectedActorUserId}, success=${selectedSuccess}, from=${from}, to=${to})}"
                class="px-3 py-1 border rounded hover:bg-slate-100">»</a>
         </div>
     </main>
