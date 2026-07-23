@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Veritabanları - AAA Yönetim</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div th:replace="~{layout/sidebar :: sidebar('infrastructure')}"></div>
+    <main class="flex-1 overflow-y-auto p-6">
+        <div class="flex items-center gap-4 mb-5">
+            <div class="flex gap-2 text-sm">
+                <a th:href="@{/infrastructure/projects}" class="px-3 py-1 border rounded hover:bg-slate-100">Projeler</a>
+                <a th:href="@{/infrastructure/modules}" class="px-3 py-1 border rounded hover:bg-slate-100">Modüller</a>
+                <a th:href="@{/infrastructure/db-servers}" class="px-3 py-1 border rounded hover:bg-slate-100">DB Sunucuları</a>
+                <a th:href="@{/infrastructure/databases}" class="px-3 py-1 bg-slate-800 text-white rounded">Veritabanları</a>
+            </div>
+            <div class="ml-auto">
+                <a th:href="@{/infrastructure/databases/new}"
+                   class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">+ Yeni Veritabanı</a>
+            </div>
+        </div>
+        <form method="get" th:action="@{/infrastructure/databases}" class="mb-4 flex gap-2">
+            <input type="text" name="search" th:value="${search}" placeholder="Veritabanı adı veya takma ad..."
+                   class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none w-72"/>
+            <button type="submit" class="bg-slate-700 text-white px-4 py-2 rounded text-sm hover:bg-slate-800">Ara</button>
+        </form>
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-slate-800 text-white">
+                <tr>
+                    <th class="px-4 py-3 text-left">Veritabanı</th>
+                    <th class="px-4 py-3 text-left">Takma Ad</th>
+                    <th class="px-4 py-3 text-left">Sunucu</th>
+                    <th class="px-4 py-3 text-left">Kimlik</th>
+                    <th class="px-4 py-3 text-center">İşlem</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="md, stat : ${databases.content}"
+                    th:classappend="${stat.odd} ? 'bg-white' : 'bg-slate-50'"
+                    class="border-b border-slate-100">
+                    <td class="px-4 py-2 font-mono text-sm" th:text="${md.databaseName}">db</td>
+                    <td class="px-4 py-2 text-xs text-slate-500" th:text="${md.databaseAlias} ?: '—'">—</td>
+                    <td class="px-4 py-2 text-xs text-slate-500" th:text="${md.databaseServer?.serverHostname} ?: '—'">—</td>
+                    <td class="px-4 py-2 text-xs text-slate-500" th:text="${md.databaseCredential?.username} ?: '—'">—</td>
+                    <td class="px-4 py-2 text-center space-x-2">
+                        <a th:href="@{/infrastructure/databases/{id}/edit(id=${md.moduleDatabaseId})}"
+                           class="text-blue-600 hover:underline text-xs">Düzenle</a>
+                        <form th:action="@{/infrastructure/databases/{id}/delete(id=${md.moduleDatabaseId})}" method="post"
+                              class="inline" onsubmit="return confirm('Silinsin mi?')">
+                            <button type="submit" class="text-red-500 hover:underline text-xs">Sil</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${databases.content.empty}">
+                    <td colspan="5" class="px-4 py-8 text-center text-slate-400">Veritabanı bulunamadı.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+</body>
+</html>

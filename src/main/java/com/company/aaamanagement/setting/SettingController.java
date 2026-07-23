@@ -2,9 +2,6 @@ package com.company.aaamanagement.setting;
 
 import com.company.aaamanagement.domain.Setting;
 import com.company.aaamanagement.domain.SettingValue;
-import com.company.aaamanagement.domain.UserGroup;
-import com.company.aaamanagement.group.GroupRepository;
-import com.company.aaamanagement.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;

@@ -37,14 +37,14 @@ public class User {
     @Column(name = "LastName", nullable = false, length = 40)
     private String lastName;
 
-    @Column(name = "Username", nullable = false, length = 40, unique = true)
+    @Column(name = "Username", length = 40)
     @ToString.Include
     private String username;
 
     @Column(name = "PasswordHashLegacy", length = 64)
     private String passwordHashLegacy;
 
-    @Column(name = "PasswordHash", nullable = false, length = 200)
+    @Column(name = "PasswordHash", length = 200)
     private String passwordHash;
 
     @Column(name = "FailedLoginCount", nullable = false)

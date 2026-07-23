@@ -8,13 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-
 public interface ModuleDatabaseRepository extends JpaRepository<ModuleDatabase, Integer> {
 
-    @Query("SELECT md FROM ModuleDatabase md WHERE :moduleId IS NULL OR md.module.moduleId = :moduleId")
-    Page<ModuleDatabase> findByModule(@Param("moduleId") Integer moduleId, Pageable pageable);
-
+    @Query("SELECT md FROM ModuleDatabase md WHERE " +
+           "(:search IS NULL OR LOWER(md.databaseName) LIKE LOWER(CONCAT('%', :search, '%')) " +
+           "OR LOWER(md.databaseAlias) LIKE LOWER(CONCAT('%', :search, '%')))")
     @EntityGraph(attributePaths = {"databaseServer", "databaseCredential"})
-    List<ModuleDatabase> findByModule_ModuleIdOrderByDatabaseNameAsc(Integer moduleId);
+    Page<ModuleDatabase> findBySearch(@Param("search") String search, Pageable pageable);
 }

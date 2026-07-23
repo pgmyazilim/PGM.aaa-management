@@ -41,12 +41,13 @@ public class UserService {
     @Transactional
     public User save(User form, String rawPassword) {
         boolean isNew = form.getUserId() == null;
-        if (isNew) {
-            if (userRepository.existsByUsername(form.getUsername())) {
-                throw new IllegalArgumentException("Bu kullanıcı adı zaten kullanılıyor: " + form.getUsername());
-            }
-        } else {
-            if (userRepository.existsByUsernameAndUserIdNot(form.getUsername(), form.getUserId())) {
+        // Username artık şemada nullable (ör. yalnızca SSO kullanıcıları); benzersizlik
+        // kontrolü sadece dolu bir kullanıcı adı verildiğinde uygulanır.
+        if (form.getUsername() != null && !form.getUsername().isBlank()) {
+            boolean duplicate = isNew
+                    ? userRepository.existsByUsername(form.getUsername())
+                    : userRepository.existsByUsernameAndUserIdNot(form.getUsername(), form.getUserId());
+            if (duplicate) {
                 throw new IllegalArgumentException("Bu kullanıcı adı zaten kullanılıyor: " + form.getUsername());
             }
         }

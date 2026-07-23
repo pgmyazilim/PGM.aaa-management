@@ -24,10 +24,6 @@ public class ModuleDatabase {
     private byte[] rowVersion;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ModuleId", nullable = false)
-    private Module module;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DatabaseServerId")
     private DatabaseServer databaseServer;
 

@@ -1,7 +1,6 @@
 package com.company.aaamanagement.constraint;
 
 import com.company.aaamanagement.domain.ActionConstraint;
-import com.company.aaamanagement.domain.ActionConstraintGroupValue;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;

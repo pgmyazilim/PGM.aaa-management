@@ -7,7 +7,6 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,9 +113,15 @@ public class InfrastructureService {
         credentialRepository.deleteById(id);
     }
 
-    // --- Module Databases ---
-    public List<ModuleDatabase> getModuleDatabases(Integer moduleId) {
-        return moduleDatabaseRepository.findByModule_ModuleIdOrderByDatabaseNameAsc(moduleId);
+    // --- Databases (ModulesDatabases) ---
+    public Page<ModuleDatabase> listDatabases(String search, int page, int size) {
+        return moduleDatabaseRepository.findBySearch(search,
+                PageRequest.of(page, size, Sort.by("databaseName")));
+    }
+
+    public ModuleDatabase findDatabaseById(Integer id) {
+        return moduleDatabaseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Veritabanı bulunamadı: " + id));
     }
 
     public List<DatabaseCredential> getAllCredentials() {
@@ -124,12 +129,11 @@ public class InfrastructureService {
     }
 
     @Transactional
-    public ModuleDatabase addModuleDatabase(Integer moduleId, Integer serverId, Integer credentialId,
-                                            String databaseName, String databaseAlias) {
+    public ModuleDatabase saveDatabase(Integer id, Integer serverId, Integer credentialId,
+                                       String databaseName, String databaseAlias) {
         if (databaseName == null || databaseName.isBlank()) {
             throw new IllegalArgumentException("Veritabanı adı boş olamaz.");
         }
-        Module module = findModuleById(moduleId);
         DatabaseServer server = serverId != null ? findServerById(serverId) : null;
         DatabaseCredential credential = null;
         if (credentialId != null) {
@@ -144,18 +148,17 @@ public class InfrastructureService {
                 throw new IllegalArgumentException("Seçilen kimlik bilgisi seçilen sunucuya ait değil.");
             }
         }
-        return moduleDatabaseRepository.save(ModuleDatabase.builder()
-                .module(module)
-                .databaseServer(server)
-                .databaseCredential(credential)
-                .databaseName(databaseName.trim())
-                .databaseAlias(databaseAlias == null || databaseAlias.isBlank() ? null : databaseAlias.trim())
-                .modifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC))
-                .build());
+        ModuleDatabase db = id != null ? findDatabaseById(id) : new ModuleDatabase();
+        db.setDatabaseServer(server);
+        db.setDatabaseCredential(credential);
+        db.setDatabaseName(databaseName.trim());
+        db.setDatabaseAlias(databaseAlias == null || databaseAlias.isBlank() ? null : databaseAlias.trim());
+        db.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
+        return moduleDatabaseRepository.save(db);
     }
 
     @Transactional
-    public void deleteModuleDatabase(Integer id) {
+    public void deleteDatabase(Integer id) {
         moduleDatabaseRepository.deleteById(id);
     }
 }

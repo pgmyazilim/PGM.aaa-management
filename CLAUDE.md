@@ -1,0 +1,2 @@
+# Proje Amcacı
+Bu proje bir çok uygulamanın altyapısı olan AAA ismindeki bir veritabanıdan bulunan verilerin yönetimini kolaylaştırmak için yazılmış bir web arayüzü projesidir. AAA Authentication Autorization ve Auditing işlemlerinin tek bir yerden yapıldığını ifade eder.

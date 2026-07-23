@@ -28,7 +28,10 @@ public class Project {
     @Column(name = "RowVersion", insertable = false, updatable = false)
     private byte[] rowVersion;
 
-    @Column(name = "Name", length = 500)
+    @Column(name = "Name", nullable = false, length = 100)
     @ToString.Include
     private String name;
+
+    @Column(name = "Description", columnDefinition = "nvarchar(max)")
+    private String description;
 }

@@ -2,13 +2,15 @@ spring:
   application:
     name: AAAManagement
   datasource:
-    url: jdbc:sqlserver://10.100.101.183:1433;databaseName=AAA;encrypt=false;trustServerCertificate=true
+    url: jdbc:sqlserver://10.99.100.117:1433;databaseName=AAA_DEV;encrypt=false;trustServerCertificate=true
     username: sa
-    password: sa
+    password: Dgmm!Dev*26
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   jpa:
     hibernate:
       ddl-auto: validate
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: false
     open-in-view: false
     properties:
@@ -23,8 +25,16 @@ spring:
     encoding: UTF-8
     mode: HTML
 
+aaa:
+  crypto:
+    # Base64 kodlu 16/24/32 baytlık AES anahtarı (DatabaseCredentials.PasswordEncrypted için).
+    # Üretimde ortam değişkeninden verin; boşsa şifreleme gerektiren işlemler hata verir.
+    key: zZ663D/9XL45sF5+xp9pK+qO5xUljKNW+ca1+wo2s/A=
+  session-cleanup:
+    delay: PT5M
+
 server:
-  port: 8080
+  port: 8081
   servlet:
     context-path: /
 

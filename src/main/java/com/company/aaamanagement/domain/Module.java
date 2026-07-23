@@ -32,7 +32,10 @@ public class Module {
     @JoinColumn(name = "ProjectId", nullable = false)
     private Project project;
 
-    @Column(name = "Name", length = 200)
+    @Column(name = "Name", nullable = false, length = 100)
     @ToString.Include
     private String name;
+
+    @Column(name = "Description", columnDefinition = "nvarchar(max)")
+    private String description;
 }

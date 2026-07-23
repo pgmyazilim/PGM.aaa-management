@@ -2,7 +2,6 @@ package com.company.aaamanagement.audit;
 
 import com.company.aaamanagement.domain.OperationType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

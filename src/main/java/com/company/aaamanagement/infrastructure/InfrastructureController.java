@@ -3,7 +3,6 @@ package com.company.aaamanagement.infrastructure;
 import com.company.aaamanagement.domain.*;
 import com.company.aaamanagement.domain.Module;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -80,9 +79,6 @@ public class InfrastructureController {
     public String editModule(@PathVariable Integer id, Model model) {
         model.addAttribute("module", infraService.findModuleById(id));
         model.addAttribute("projects", infraService.getAllProjects());
-        model.addAttribute("moduleDatabases", infraService.getModuleDatabases(id));
-        model.addAttribute("servers", infraService.getAllServers());
-        model.addAttribute("credentials", infraService.getAllCredentials());
         model.addAttribute("activePage", "infrastructure");
         return "infrastructure/module-form";
     }
@@ -99,21 +95,51 @@ public class InfrastructureController {
         return "redirect:/infrastructure/modules";
     }
 
-    @PostMapping("/modules/{id}/databases/save")
-    public String addModuleDatabase(@PathVariable Integer id,
-                                     @RequestParam(required = false) Integer databaseServerId,
-                                     @RequestParam(required = false) Integer databaseCredentialId,
-                                     @RequestParam String databaseName,
-                                     @RequestParam(required = false) String databaseAlias) {
-        infraService.addModuleDatabase(id, databaseServerId, databaseCredentialId, databaseName, databaseAlias);
-        return "redirect:/infrastructure/modules/" + id + "/edit";
+    // --- Databases ---
+    @GetMapping("/databases")
+    public String databases(@RequestParam(required = false) String search,
+                            @RequestParam(defaultValue = "0") int page,
+                            @RequestParam(defaultValue = "20") int size,
+                            Model model) {
+        model.addAttribute("databases", infraService.listDatabases(search, page, size));
+        model.addAttribute("search", search);
+        model.addAttribute("activePage", "infrastructure");
+        return "infrastructure/databases";
     }
 
-    @PostMapping("/module-databases/{id}/delete")
-    public String deleteModuleDatabase(@PathVariable Integer id,
-                                        @RequestParam Integer moduleId) {
-        infraService.deleteModuleDatabase(id);
-        return "redirect:/infrastructure/modules/" + moduleId + "/edit";
+    @GetMapping("/databases/new")
+    public String newDatabase(Model model) {
+        model.addAttribute("database", new ModuleDatabase());
+        model.addAttribute("servers", infraService.getAllServers());
+        model.addAttribute("credentials", infraService.getAllCredentials());
+        model.addAttribute("activePage", "infrastructure");
+        return "infrastructure/database-form";
+    }
+
+    @GetMapping("/databases/{id}/edit")
+    public String editDatabase(@PathVariable Integer id, Model model) {
+        model.addAttribute("database", infraService.findDatabaseById(id));
+        model.addAttribute("servers", infraService.getAllServers());
+        model.addAttribute("credentials", infraService.getAllCredentials());
+        model.addAttribute("activePage", "infrastructure");
+        return "infrastructure/database-form";
+    }
+
+    @PostMapping("/databases/save")
+    public String saveDatabase(@RequestParam(required = false) Integer moduleDatabaseId,
+                               @RequestParam(required = false) Integer databaseServerId,
+                               @RequestParam(required = false) Integer databaseCredentialId,
+                               @RequestParam String databaseName,
+                               @RequestParam(required = false) String databaseAlias) {
+        infraService.saveDatabase(moduleDatabaseId, databaseServerId, databaseCredentialId,
+                databaseName, databaseAlias);
+        return "redirect:/infrastructure/databases";
+    }
+
+    @PostMapping("/databases/{id}/delete")
+    public String deleteDatabase(@PathVariable Integer id) {
+        infraService.deleteDatabase(id);
+        return "redirect:/infrastructure/databases";
     }
 
     // --- Database Servers ---
