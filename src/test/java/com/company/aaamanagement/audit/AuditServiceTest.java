@@ -2,6 +2,7 @@ package com.company.aaamanagement.audit;
 
 import com.company.aaamanagement.action.ActionRepository;
 import com.company.aaamanagement.domain.Action;
+import com.company.aaamanagement.domain.ActionLog;
 import com.company.aaamanagement.domain.OperationType;
 import com.company.aaamanagement.domain.RecordAudit;
 import com.company.aaamanagement.domain.User;
@@ -10,11 +11,11 @@ import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -44,13 +45,13 @@ class AuditServiceTest {
     void listActionLogs_delegatesToSpecificationAndSortsByOccurredAtDesc() {
         LocalDateTime from = LocalDateTime.of(2026, 1, 1, 0, 0);
         LocalDateTime to = LocalDateTime.of(2026, 1, 31, 23, 59);
-        when(actionLogRepository.findAll(any(Specification.class), any(Pageable.class)))
+        when(actionLogRepository.findAll(ArgumentMatchers.<Specification<ActionLog>>any(), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of()));
 
         service.listActionLogs(3, 7, true, from, to, 0, 50);
 
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
-        verify(actionLogRepository).findAll(any(Specification.class), pageableCaptor.capture());
+        verify(actionLogRepository).findAll(ArgumentMatchers.<Specification<ActionLog>>any(), pageableCaptor.capture());
         assertThat(pageableCaptor.getValue().getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "occurredAtUtc"));
         assertThat(pageableCaptor.getValue().getPageSize()).isEqualTo(50);
     }
@@ -59,13 +60,13 @@ class AuditServiceTest {
     void listRecordAudits_delegatesToSpecificationAndSortsByOccurredAtDesc() {
         LocalDateTime from = LocalDateTime.of(2026, 1, 1, 0, 0);
         LocalDateTime to = LocalDateTime.of(2026, 1, 31, 23, 59);
-        when(recordAuditRepository.findAll(any(Specification.class), any(Pageable.class)))
+        when(recordAuditRepository.findAll(ArgumentMatchers.<Specification<RecordAudit>>any(), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of()));
 
         service.listRecordAudits(2, 9, OperationType.U, from, to, 0, 50);
 
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
-        verify(recordAuditRepository).findAll(any(Specification.class), pageableCaptor.capture());
+        verify(recordAuditRepository).findAll(ArgumentMatchers.<Specification<RecordAudit>>any(), pageableCaptor.capture());
         assertThat(pageableCaptor.getValue().getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "occurredAtUtc"));
     }
 
