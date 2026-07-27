@@ -53,12 +53,6 @@ public class User {
     @Column(name = "LockedUntilUtc")
     private LocalDateTime lockedUntilUtc;
 
-    @Column(name = "OtpSecretEncrypted", length = 256)
-    private byte[] otpSecretEncrypted;
-
-    @Column(name = "OtpRecoveryCodesEncrypted", columnDefinition = "varbinary(max)")
-    private byte[] otpRecoveryCodesEncrypted;
-
     @Column(name = "IsActive", nullable = false)
     private boolean active;
 

@@ -57,10 +57,9 @@ class UserServiceTest {
     }
 
     @Test
-    void save_existingUserWithoutPassword_keepsStoredHashAndOtpFields() {
+    void save_existingUserWithoutPassword_keepsStoredHash() {
         User existing = User.builder().userId(5).username("mevcut")
                 .passwordHash("$2a$10$eski")
-                .otpSecretEncrypted(new byte[]{1, 2, 3})
                 .failedLoginCount(3)
                 .build();
         User form = User.builder().userId(5).username("mevcut").firstName("Yeni Ad").build();
@@ -71,7 +70,6 @@ class UserServiceTest {
         User saved = userService.save(form, null);
 
         assertThat(saved.getPasswordHash()).isEqualTo("$2a$10$eski");
-        assertThat(saved.getOtpSecretEncrypted()).containsExactly(1, 2, 3);
         assertThat(saved.getFailedLoginCount()).isEqualTo(3);
         assertThat(saved.getFirstName()).isEqualTo("Yeni Ad");
         verify(passwordEncoder, never()).encode(any());

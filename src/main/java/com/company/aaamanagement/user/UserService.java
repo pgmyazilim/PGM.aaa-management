@@ -66,8 +66,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    // Form yalnızca düzenlenebilir alanları gönderir; hash, OTP secret'ları ve
-    // kilit sayaçları gibi form dışı alanlar mevcut kayıttan korunur.
+    // Form yalnızca düzenlenebilir alanları gönderir; hash ve kilit sayaçları
+    // gibi form dışı alanlar mevcut kayıttan korunur.
     private User mergeIntoExisting(User form) {
         User user = findById(form.getUserId());
         user.setFirstName(form.getFirstName());
