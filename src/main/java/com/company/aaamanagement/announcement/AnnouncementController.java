@@ -14,9 +14,9 @@ public class AnnouncementController {
     private final AnnouncementService announcementService;
 
     @GetMapping
-    public String list(@RequestParam(required = false) String search,
-                       @RequestParam(defaultValue = "0") int page,
-                       @RequestParam(defaultValue = "20") int size,
+    public String list(@RequestParam(value = "search", required = false) String search,
+                       @RequestParam(value = "page", defaultValue = "0") int page,
+                       @RequestParam(value = "size", defaultValue = "20") int size,
                        Model model) {
         model.addAttribute("announcements", announcementService.list(search, page, size));
         model.addAttribute("search", search);
@@ -33,7 +33,7 @@ public class AnnouncementController {
     }
 
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Integer id, Model model) {
+    public String editForm(@PathVariable("id") Integer id, Model model) {
         model.addAttribute("announcement", announcementService.findById(id));
         model.addAttribute("targets", announcementService.getTargets(id));
         model.addAttribute("allUsers", announcementService.getAllUsers());
@@ -44,28 +44,28 @@ public class AnnouncementController {
 
     @PostMapping("/save")
     public String save(@ModelAttribute Announcement announcement,
-                       @RequestParam(required = false) Integer createdByUserId) {
+                       @RequestParam(value = "createdByUserId", required = false) Integer createdByUserId) {
         announcementService.saveAnnouncement(announcement, createdByUserId);
         return "redirect:/announcements";
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Integer id) {
+    public String delete(@PathVariable("id") Integer id) {
         announcementService.deleteAnnouncement(id);
         return "redirect:/announcements";
     }
 
     @PostMapping("/{id}/targets/add")
-    public String addTarget(@PathVariable Integer id,
-                            @RequestParam(required = false) Integer userId,
-                            @RequestParam(required = false) Integer userGroupId) {
+    public String addTarget(@PathVariable("id") Integer id,
+                            @RequestParam(value = "userId", required = false) Integer userId,
+                            @RequestParam(value = "userGroupId", required = false) Integer userGroupId) {
         announcementService.addTarget(id, userId, userGroupId);
         return "redirect:/announcements/" + id + "/edit";
     }
 
     @PostMapping("/targets/{targetId}/delete")
-    public String deleteTarget(@PathVariable Integer targetId,
-                               @RequestParam Integer announcementId) {
+    public String deleteTarget(@PathVariable("targetId") Integer targetId,
+                               @RequestParam("announcementId") Integer announcementId) {
         announcementService.deleteTarget(targetId);
         return "redirect:/announcements/" + announcementId + "/edit";
     }

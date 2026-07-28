@@ -19,8 +19,8 @@ public class PermissionController {
     private final PermissionService permissionService;
 
     @GetMapping
-    public String matrix(@RequestParam(required = false) Integer groupId,
-                         @RequestParam(required = false) Integer moduleId,
+    public String matrix(@RequestParam(value = "groupId", required = false) Integer groupId,
+                         @RequestParam(value = "moduleId", required = false) Integer moduleId,
                          Model model) {
         List<GroupActionPermission> permissions = groupId != null
                 ? permissionService.getPermissionsForGroup(groupId, moduleId)
@@ -40,19 +40,19 @@ public class PermissionController {
     @PostMapping("/toggle")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> toggle(
-            @RequestParam Integer actionId,
-            @RequestParam Integer groupId,
+            @RequestParam("actionId") Integer actionId,
+            @RequestParam("groupId") Integer groupId,
             @RequestHeader(value = "HX-Request", required = false) String htmx) {
         permissionService.togglePermission(actionId, groupId);
         return ResponseEntity.ok(Map.of("success", true));
     }
 
     @PostMapping("/upsert")
-    public String upsert(@RequestParam Integer actionId,
-                         @RequestParam Integer groupId,
-                         @RequestParam(defaultValue = "false") boolean allowed,
-                         @RequestParam(required = false) String expiresAtUtc,
-                         @RequestParam(required = false) Short allowedExecutionCount) {
+    public String upsert(@RequestParam("actionId") Integer actionId,
+                         @RequestParam("groupId") Integer groupId,
+                         @RequestParam(value = "allowed", defaultValue = "false") boolean allowed,
+                         @RequestParam(value = "expiresAtUtc", required = false) String expiresAtUtc,
+                         @RequestParam(value = "allowedExecutionCount", required = false) Short allowedExecutionCount) {
         LocalDateTime expires = expiresAtUtc != null && !expiresAtUtc.isBlank()
                 ? LocalDateTime.parse(expiresAtUtc) : null;
         permissionService.upsertPermission(actionId, groupId, allowed, expires, allowedExecutionCount);
@@ -60,8 +60,8 @@ public class PermissionController {
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Integer id,
-                         @RequestParam(required = false) Integer groupId) {
+    public String delete(@PathVariable("id") Integer id,
+                         @RequestParam(value = "groupId", required = false) Integer groupId) {
         permissionService.delete(id);
         return groupId != null ? "redirect:/permissions?groupId=" + groupId : "redirect:/permissions";
     }

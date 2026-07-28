@@ -17,13 +17,13 @@ public class AuditController {
     private final AuditService auditService;
 
     @GetMapping("/action-logs")
-    public String actionLogs(@RequestParam(required = false) Integer actionId,
-                              @RequestParam(required = false) Integer actorUserId,
-                              @RequestParam(required = false) Boolean success,
-                              @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-                              @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
-                              @RequestParam(defaultValue = "0") int page,
-                              @RequestParam(defaultValue = "50") int size,
+    public String actionLogs(@RequestParam(value = "actionId", required = false) Integer actionId,
+                              @RequestParam(value = "actorUserId", required = false) Integer actorUserId,
+                              @RequestParam(value = "success", required = false) Boolean success,
+                              @RequestParam(value = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+                              @RequestParam(value = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+                              @RequestParam(value = "page", defaultValue = "0") int page,
+                              @RequestParam(value = "size", defaultValue = "50") int size,
                               Model model) {
         model.addAttribute("logs", auditService.listActionLogs(actionId, actorUserId, success, from, to, page, size));
         model.addAttribute("allActions", auditService.getAllActions());
@@ -38,12 +38,12 @@ public class AuditController {
     }
 
     @GetMapping("/sessions")
-    public String sessions(@RequestParam(required = false) Integer userId,
-                            @RequestParam(required = false) Boolean open,
-                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
-                            @RequestParam(defaultValue = "0") int page,
-                            @RequestParam(defaultValue = "50") int size,
+    public String sessions(@RequestParam(value = "userId", required = false) Integer userId,
+                            @RequestParam(value = "open", required = false) Boolean open,
+                            @RequestParam(value = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+                            @RequestParam(value = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+                            @RequestParam(value = "page", defaultValue = "0") int page,
+                            @RequestParam(value = "size", defaultValue = "50") int size,
                             Model model) {
         model.addAttribute("sessions", auditService.listSessions(userId, open, from, to, page, size));
         model.addAttribute("activePage", "sessions");
@@ -51,13 +51,13 @@ public class AuditController {
     }
 
     @GetMapping("/record-audits")
-    public String recordAudits(@RequestParam(required = false) Integer tableId,
-                                @RequestParam(required = false) Integer actorUserId,
-                                @RequestParam(required = false) OperationType opType,
-                                @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-                                @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
-                                @RequestParam(defaultValue = "0") int page,
-                                @RequestParam(defaultValue = "50") int size,
+    public String recordAudits(@RequestParam(value = "tableId", required = false) Integer tableId,
+                                @RequestParam(value = "actorUserId", required = false) Integer actorUserId,
+                                @RequestParam(value = "opType", required = false) OperationType opType,
+                                @RequestParam(value = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+                                @RequestParam(value = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+                                @RequestParam(value = "page", defaultValue = "0") int page,
+                                @RequestParam(value = "size", defaultValue = "50") int size,
                                 Model model) {
         model.addAttribute("audits", auditService.listRecordAudits(tableId, actorUserId, opType, from, to, page, size));
         model.addAttribute("trackedTables", auditService.getAllTrackedTables());
@@ -73,7 +73,7 @@ public class AuditController {
     }
 
     @GetMapping("/record-audits/{id}")
-    public String recordAuditDetail(@PathVariable Long id, Model model) {
+    public String recordAuditDetail(@PathVariable("id") Long id, Model model) {
         model.addAttribute("audit", auditService.findRecordAuditById(id));
         model.addAttribute("activePage", "record-audits");
         return "audit/record-audit-detail";

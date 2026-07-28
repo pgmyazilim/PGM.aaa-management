@@ -17,9 +17,9 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public String list(@RequestParam(required = false) String search,
-                       @RequestParam(defaultValue = "0") int page,
-                       @RequestParam(defaultValue = "20") int size,
+    public String list(@RequestParam(value = "search", required = false) String search,
+                       @RequestParam(value = "page", defaultValue = "0") int page,
+                       @RequestParam(value = "size", defaultValue = "20") int size,
                        Model model) {
         Page<User> users = userService.list(search, page, size);
         model.addAttribute("users", users);
@@ -36,7 +36,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Integer id, Model model) {
+    public String editForm(@PathVariable("id") Integer id, Model model) {
         model.addAttribute("user", userService.findById(id));
         model.addAttribute("activePage", "users");
         return "user/form";
@@ -44,25 +44,25 @@ public class UserController {
 
     @PostMapping("/save")
     public String save(@ModelAttribute User user,
-                       @RequestParam(required = false) String password) {
+                       @RequestParam(value = "password", required = false) String password) {
         userService.save(user, password);
         return "redirect:/users";
     }
 
     @PostMapping("/{id}/unlock")
-    public String unlock(@PathVariable Integer id) {
+    public String unlock(@PathVariable("id") Integer id) {
         userService.unlock(id);
         return "redirect:/users/" + id + "/edit";
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Integer id) {
+    public String delete(@PathVariable("id") Integer id) {
         userService.delete(id);
         return "redirect:/users";
     }
 
     @GetMapping("/{id}/groups")
-    public String groupPanel(@PathVariable Integer id, Model model,
+    public String groupPanel(@PathVariable("id") Integer id, Model model,
                               @RequestHeader(value = "HX-Request", required = false) String htmx) {
         model.addAttribute("user", userService.findById(id));
         model.addAttribute("memberships", userService.getMemberships(id));
@@ -74,8 +74,8 @@ public class UserController {
     }
 
     @PostMapping("/{id}/groups/sync")
-    public String syncGroups(@PathVariable Integer id,
-                              @RequestParam(required = false) List<Integer> groupIds,
+    public String syncGroups(@PathVariable("id") Integer id,
+                              @RequestParam(value = "groupIds", required = false) List<Integer> groupIds,
                               @RequestHeader(value = "HX-Request", required = false) String htmx) {
         userService.syncGroups(id, groupIds == null ? List.of() : groupIds);
         if (htmx != null) {

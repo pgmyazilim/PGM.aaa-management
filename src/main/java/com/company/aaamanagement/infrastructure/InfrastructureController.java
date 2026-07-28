@@ -16,9 +16,9 @@ public class InfrastructureController {
 
     // --- Projects ---
     @GetMapping("/projects")
-    public String projects(@RequestParam(required = false) String search,
-                            @RequestParam(defaultValue = "0") int page,
-                            @RequestParam(defaultValue = "20") int size,
+    public String projects(@RequestParam(value = "search", required = false) String search,
+                            @RequestParam(value = "page", defaultValue = "0") int page,
+                            @RequestParam(value = "size", defaultValue = "20") int size,
                             Model model) {
         model.addAttribute("projects", infraService.listProjects(search, page, size));
         model.addAttribute("search", search);
@@ -34,7 +34,7 @@ public class InfrastructureController {
     }
 
     @GetMapping("/projects/{id}/edit")
-    public String editProject(@PathVariable Integer id, Model model) {
+    public String editProject(@PathVariable("id") Integer id, Model model) {
         model.addAttribute("project", infraService.findProjectById(id));
         model.addAttribute("activePage", "infrastructure");
         return "infrastructure/project-form";
@@ -47,17 +47,17 @@ public class InfrastructureController {
     }
 
     @PostMapping("/projects/{id}/delete")
-    public String deleteProject(@PathVariable Integer id) {
+    public String deleteProject(@PathVariable("id") Integer id) {
         infraService.deleteProject(id);
         return "redirect:/infrastructure/projects";
     }
 
     // --- Modules ---
     @GetMapping("/modules")
-    public String modules(@RequestParam(required = false) Integer projectId,
-                           @RequestParam(required = false) String search,
-                           @RequestParam(defaultValue = "0") int page,
-                           @RequestParam(defaultValue = "20") int size,
+    public String modules(@RequestParam(value = "projectId", required = false) Integer projectId,
+                           @RequestParam(value = "search", required = false) String search,
+                           @RequestParam(value = "page", defaultValue = "0") int page,
+                           @RequestParam(value = "size", defaultValue = "20") int size,
                            Model model) {
         model.addAttribute("modules", infraService.listModules(projectId, search, page, size));
         model.addAttribute("projects", infraService.getAllProjects());
@@ -76,7 +76,7 @@ public class InfrastructureController {
     }
 
     @GetMapping("/modules/{id}/edit")
-    public String editModule(@PathVariable Integer id, Model model) {
+    public String editModule(@PathVariable("id") Integer id, Model model) {
         model.addAttribute("module", infraService.findModuleById(id));
         model.addAttribute("projects", infraService.getAllProjects());
         model.addAttribute("activePage", "infrastructure");
@@ -90,16 +90,16 @@ public class InfrastructureController {
     }
 
     @PostMapping("/modules/{id}/delete")
-    public String deleteModule(@PathVariable Integer id) {
+    public String deleteModule(@PathVariable("id") Integer id) {
         infraService.deleteModule(id);
         return "redirect:/infrastructure/modules";
     }
 
     // --- Databases ---
     @GetMapping("/databases")
-    public String databases(@RequestParam(required = false) String search,
-                            @RequestParam(defaultValue = "0") int page,
-                            @RequestParam(defaultValue = "20") int size,
+    public String databases(@RequestParam(value = "search", required = false) String search,
+                            @RequestParam(value = "page", defaultValue = "0") int page,
+                            @RequestParam(value = "size", defaultValue = "20") int size,
                             Model model) {
         model.addAttribute("databases", infraService.listDatabases(search, page, size));
         model.addAttribute("search", search);
@@ -117,7 +117,7 @@ public class InfrastructureController {
     }
 
     @GetMapping("/databases/{id}/edit")
-    public String editDatabase(@PathVariable Integer id, Model model) {
+    public String editDatabase(@PathVariable("id") Integer id, Model model) {
         model.addAttribute("database", infraService.findDatabaseById(id));
         model.addAttribute("servers", infraService.getAllServers());
         model.addAttribute("credentials", infraService.getAllCredentials());
@@ -126,27 +126,27 @@ public class InfrastructureController {
     }
 
     @PostMapping("/databases/save")
-    public String saveDatabase(@RequestParam(required = false) Integer moduleDatabaseId,
-                               @RequestParam(required = false) Integer databaseServerId,
-                               @RequestParam(required = false) Integer databaseCredentialId,
-                               @RequestParam String databaseName,
-                               @RequestParam(required = false) String databaseAlias) {
+    public String saveDatabase(@RequestParam(value = "moduleDatabaseId", required = false) Integer moduleDatabaseId,
+                               @RequestParam(value = "databaseServerId", required = false) Integer databaseServerId,
+                               @RequestParam(value = "databaseCredentialId", required = false) Integer databaseCredentialId,
+                               @RequestParam("databaseName") String databaseName,
+                               @RequestParam(value = "databaseAlias", required = false) String databaseAlias) {
         infraService.saveDatabase(moduleDatabaseId, databaseServerId, databaseCredentialId,
                 databaseName, databaseAlias);
         return "redirect:/infrastructure/databases";
     }
 
     @PostMapping("/databases/{id}/delete")
-    public String deleteDatabase(@PathVariable Integer id) {
+    public String deleteDatabase(@PathVariable("id") Integer id) {
         infraService.deleteDatabase(id);
         return "redirect:/infrastructure/databases";
     }
 
     // --- Database Servers ---
     @GetMapping("/db-servers")
-    public String dbServers(@RequestParam(required = false) String search,
-                             @RequestParam(defaultValue = "0") int page,
-                             @RequestParam(defaultValue = "20") int size,
+    public String dbServers(@RequestParam(value = "search", required = false) String search,
+                             @RequestParam(value = "page", defaultValue = "0") int page,
+                             @RequestParam(value = "size", defaultValue = "20") int size,
                              Model model) {
         model.addAttribute("servers", infraService.listServers(search, page, size));
         model.addAttribute("search", search);
@@ -162,7 +162,7 @@ public class InfrastructureController {
     }
 
     @GetMapping("/db-servers/{id}/edit")
-    public String editServer(@PathVariable Integer id, Model model) {
+    public String editServer(@PathVariable("id") Integer id, Model model) {
         model.addAttribute("server", infraService.findServerById(id));
         model.addAttribute("credentials", infraService.getCredentials(id));
         model.addAttribute("activePage", "infrastructure");
@@ -176,23 +176,23 @@ public class InfrastructureController {
     }
 
     @PostMapping("/db-servers/{id}/delete")
-    public String deleteServer(@PathVariable Integer id) {
+    public String deleteServer(@PathVariable("id") Integer id) {
         infraService.deleteServer(id);
         return "redirect:/infrastructure/db-servers";
     }
 
     @PostMapping("/db-servers/{serverId}/credentials/save")
-    public String saveCredential(@PathVariable Integer serverId,
+    public String saveCredential(@PathVariable("serverId") Integer serverId,
                                   @ModelAttribute DatabaseCredential credential,
-                                  @RequestParam(required = false) String password) {
+                                  @RequestParam(value = "password", required = false) String password) {
         credential.setDatabaseServer(infraService.findServerById(serverId));
         infraService.saveCredential(credential, password);
         return "redirect:/infrastructure/db-servers/" + serverId + "/edit";
     }
 
     @PostMapping("/credentials/{id}/delete")
-    public String deleteCredential(@PathVariable Integer id,
-                                    @RequestParam Integer serverId) {
+    public String deleteCredential(@PathVariable("id") Integer id,
+                                    @RequestParam("serverId") Integer serverId) {
         infraService.deleteCredential(id);
         return "redirect:/infrastructure/db-servers/" + serverId + "/edit";
     }

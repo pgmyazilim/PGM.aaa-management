@@ -16,9 +16,9 @@ public class SettingController {
     private final SettingService settingService;
 
     @GetMapping
-    public String list(@RequestParam(required = false) String search,
-                       @RequestParam(defaultValue = "0") int page,
-                       @RequestParam(defaultValue = "20") int size,
+    public String list(@RequestParam(value = "search", required = false) String search,
+                       @RequestParam(value = "page", defaultValue = "0") int page,
+                       @RequestParam(value = "size", defaultValue = "20") int size,
                        Model model) {
         Page<Setting> settings = settingService.list(search, page, size);
         model.addAttribute("settings", settings);
@@ -35,7 +35,7 @@ public class SettingController {
     }
 
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Integer id, Model model) {
+    public String editForm(@PathVariable("id") Integer id, Model model) {
         model.addAttribute("setting", settingService.findById(id));
         model.addAttribute("values", settingService.getValues(id));
         model.addAttribute("allUsers", settingService.getAllUsers());
@@ -51,16 +51,16 @@ public class SettingController {
     }
 
     @PostMapping("/{id}/delete")
-    public String deleteSetting(@PathVariable Integer id) {
+    public String deleteSetting(@PathVariable("id") Integer id) {
         settingService.deleteSetting(id);
         return "redirect:/settings";
     }
 
     @PostMapping("/{settingId}/values/save")
-    public String saveValue(@PathVariable Integer settingId,
-                             @RequestParam(required = false) Integer userId,
-                             @RequestParam(required = false) Integer userGroupId,
-                             @RequestParam String value) {
+    public String saveValue(@PathVariable("settingId") Integer settingId,
+                             @RequestParam(value = "userId", required = false) Integer userId,
+                             @RequestParam(value = "userGroupId", required = false) Integer userGroupId,
+                             @RequestParam("value") String value) {
         Setting setting = settingService.findById(settingId);
         SettingValue sv = new SettingValue();
         sv.setSetting(setting);
@@ -77,8 +77,8 @@ public class SettingController {
     }
 
     @PostMapping("/values/{valueId}/delete")
-    public String deleteValue(@PathVariable Integer valueId,
-                               @RequestParam Integer settingId) {
+    public String deleteValue(@PathVariable("valueId") Integer valueId,
+                               @RequestParam("settingId") Integer settingId) {
         settingService.deleteSettingValue(valueId);
         return "redirect:/settings/" + settingId + "/edit";
     }

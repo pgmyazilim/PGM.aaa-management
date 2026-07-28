@@ -15,10 +15,10 @@ public class ActionController {
     private final ActionService actionService;
 
     @GetMapping
-    public String list(@RequestParam(required = false) Integer moduleId,
-                       @RequestParam(required = false) String search,
-                       @RequestParam(defaultValue = "0") int page,
-                       @RequestParam(defaultValue = "20") int size,
+    public String list(@RequestParam(value = "moduleId", required = false) Integer moduleId,
+                       @RequestParam(value = "search", required = false) String search,
+                       @RequestParam(value = "page", defaultValue = "0") int page,
+                       @RequestParam(value = "size", defaultValue = "20") int size,
                        Model model) {
         Page<Action> actions = actionService.list(moduleId, search, page, size);
         model.addAttribute("actions", actions);
@@ -30,7 +30,7 @@ public class ActionController {
     }
 
     @GetMapping("/new")
-    public String newForm(@RequestParam(required = false) Integer moduleId, Model model) {
+    public String newForm(@RequestParam(value = "moduleId", required = false) Integer moduleId, Model model) {
         Action action = new Action();
         model.addAttribute("action", action);
         model.addAttribute("modules", actionService.getAllModules());
@@ -40,7 +40,7 @@ public class ActionController {
     }
 
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Integer id, Model model) {
+    public String editForm(@PathVariable("id") Integer id, Model model) {
         model.addAttribute("action", actionService.findById(id));
         model.addAttribute("modules", actionService.getAllModules());
         model.addAttribute("activePage", "actions");
@@ -54,7 +54,7 @@ public class ActionController {
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Integer id) {
+    public String delete(@PathVariable("id") Integer id) {
         actionService.delete(id);
         return "redirect:/actions";
     }

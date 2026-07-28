@@ -19,10 +19,10 @@ public class TrackedTableController {
     private final TrackedTableService trackedTableService;
 
     @GetMapping
-    public String list(@RequestParam(required = false) String search,
-                       @RequestParam(required = false) String error,
-                       @RequestParam(defaultValue = "0") int page,
-                       @RequestParam(defaultValue = "20") int size,
+    public String list(@RequestParam(value = "search", required = false) String search,
+                       @RequestParam(value = "error", required = false) String error,
+                       @RequestParam(value = "page", defaultValue = "0") int page,
+                       @RequestParam(value = "size", defaultValue = "20") int size,
                        Model model) {
         model.addAttribute("trackedTables", trackedTableService.listTrackedTables(search, page, size));
         model.addAttribute("search", search);
@@ -40,7 +40,7 @@ public class TrackedTableController {
     }
 
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Integer id, Model model) {
+    public String editForm(@PathVariable("id") Integer id, Model model) {
         model.addAttribute("trackedTable", trackedTableService.findById(id));
         model.addAttribute("operationTypes", OperationType.values());
         model.addAttribute("activePage", "tracked-tables");
@@ -49,8 +49,8 @@ public class TrackedTableController {
 
     @PostMapping("/save")
     public String save(@ModelAttribute TrackedTable trackedTable,
-                       @RequestParam(required = false) List<String> actorTypes,
-                       @RequestParam(required = false) List<String> recordTypes) {
+                       @RequestParam(value = "actorTypes", required = false) List<String> actorTypes,
+                       @RequestParam(value = "recordTypes", required = false) List<String> recordTypes) {
         try {
             trackedTableService.save(trackedTable, actorTypes, recordTypes);
         } catch (IllegalArgumentException | IllegalStateException e) {
@@ -60,7 +60,7 @@ public class TrackedTableController {
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Integer id) {
+    public String delete(@PathVariable("id") Integer id) {
         try {
             trackedTableService.delete(id);
         } catch (IllegalArgumentException | IllegalStateException e) {

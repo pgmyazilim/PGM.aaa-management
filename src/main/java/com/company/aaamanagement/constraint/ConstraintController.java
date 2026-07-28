@@ -15,10 +15,10 @@ public class ConstraintController {
     private final ConstraintService constraintService;
 
     @GetMapping
-    public String list(@RequestParam(required = false) Integer actionId,
-                       @RequestParam(required = false) String search,
-                       @RequestParam(defaultValue = "0") int page,
-                       @RequestParam(defaultValue = "20") int size,
+    public String list(@RequestParam(value = "actionId", required = false) Integer actionId,
+                       @RequestParam(value = "search", required = false) String search,
+                       @RequestParam(value = "page", defaultValue = "0") int page,
+                       @RequestParam(value = "size", defaultValue = "20") int size,
                        Model model) {
         Page<ActionConstraint> constraints = constraintService.list(actionId, search, page, size);
         model.addAttribute("constraints", constraints);
@@ -30,7 +30,7 @@ public class ConstraintController {
     }
 
     @GetMapping("/new")
-    public String newForm(@RequestParam(required = false) Integer actionId, Model model) {
+    public String newForm(@RequestParam(value = "actionId", required = false) Integer actionId, Model model) {
         model.addAttribute("constraint", new ActionConstraint());
         model.addAttribute("actions", constraintService.getAllActions());
         model.addAttribute("operators", constraintService.getOperators());
@@ -40,7 +40,7 @@ public class ConstraintController {
     }
 
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Integer id, Model model) {
+    public String editForm(@PathVariable("id") Integer id, Model model) {
         ActionConstraint constraint = constraintService.findById(id);
         model.addAttribute("constraint", constraint);
         model.addAttribute("actions", constraintService.getAllActions());
@@ -58,26 +58,26 @@ public class ConstraintController {
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Integer id) {
+    public String delete(@PathVariable("id") Integer id) {
         constraintService.delete(id);
         return "redirect:/constraints";
     }
 
     @PostMapping("/{id}/group-values/upsert")
-    public String upsertGroupValue(@PathVariable Integer id,
-                                    @RequestParam Integer groupId,
-                                    @RequestParam String valueList,
-                                    @RequestParam(required = false) String valueDelimiter,
-                                    @RequestParam(required = false) String valuesLogicalOperator,
-                                    @RequestParam(required = false) String valueLogicalOperator) {
+    public String upsertGroupValue(@PathVariable("id") Integer id,
+                                    @RequestParam("groupId") Integer groupId,
+                                    @RequestParam("valueList") String valueList,
+                                    @RequestParam(value = "valueDelimiter", required = false) String valueDelimiter,
+                                    @RequestParam(value = "valuesLogicalOperator", required = false) String valuesLogicalOperator,
+                                    @RequestParam(value = "valueLogicalOperator", required = false) String valueLogicalOperator) {
         constraintService.upsertGroupValue(id, groupId, valueList, valueDelimiter,
                 valuesLogicalOperator, valueLogicalOperator);
         return "redirect:/constraints/" + id + "/edit";
     }
 
     @PostMapping("/group-values/{valueId}/delete")
-    public String deleteGroupValue(@PathVariable Integer valueId,
-                                    @RequestParam Integer constraintId) {
+    public String deleteGroupValue(@PathVariable("valueId") Integer valueId,
+                                    @RequestParam("constraintId") Integer constraintId) {
         constraintService.deleteGroupValue(valueId);
         return "redirect:/constraints/" + constraintId + "/edit";
     }

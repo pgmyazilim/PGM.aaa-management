@@ -15,9 +15,9 @@ public class GroupController {
     private final GroupService groupService;
 
     @GetMapping
-    public String list(@RequestParam(required = false) String search,
-                       @RequestParam(defaultValue = "0") int page,
-                       @RequestParam(defaultValue = "20") int size,
+    public String list(@RequestParam(value = "search", required = false) String search,
+                       @RequestParam(value = "page", defaultValue = "0") int page,
+                       @RequestParam(value = "size", defaultValue = "20") int size,
                        Model model) {
         Page<UserGroup> groups = groupService.list(search, page, size);
         model.addAttribute("groups", groups);
@@ -34,7 +34,7 @@ public class GroupController {
     }
 
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Integer id, Model model) {
+    public String editForm(@PathVariable("id") Integer id, Model model) {
         model.addAttribute("group", groupService.findById(id));
         model.addAttribute("activePage", "groups");
         return "group/form";
@@ -47,7 +47,7 @@ public class GroupController {
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Integer id) {
+    public String delete(@PathVariable("id") Integer id) {
         groupService.delete(id);
         return "redirect:/groups";
     }
