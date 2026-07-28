@@ -32,6 +32,9 @@ public class Project {
     @ToString.Include
     private String name;
 
+    @Column(name = "ProjectKey", nullable = false, length = 100)
+    private String projectKey;
+
     @Column(name = "Description", columnDefinition = "nvarchar(max)")
     private String description;
 }

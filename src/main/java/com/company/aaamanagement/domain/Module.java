@@ -36,6 +36,9 @@ public class Module {
     @ToString.Include
     private String name;
 
+    @Column(name = "ModuleKey", nullable = false, length = 100)
+    private String moduleKey;
+
     @Column(name = "Description", columnDefinition = "nvarchar(max)")
     private String description;
 }
