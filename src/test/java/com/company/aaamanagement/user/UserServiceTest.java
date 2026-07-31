@@ -76,6 +76,31 @@ class UserServiceTest {
     }
 
     @Test
+    void save_newUserWithBlankUsername_persistsNullNotEmptyString() {
+        User form = User.builder().username("   ").build();
+        when(passwordEncoder.encode("gizli123")).thenReturn("$2a$10$hash");
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        User saved = userService.save(form, "gizli123");
+
+        assertThat(saved.getUsername()).isNull();
+        verify(userRepository, never()).existsByUsername(any());
+    }
+
+    @Test
+    void save_newUserWithBlankEmail_persistsNullNotEmptyString() {
+        User form = User.builder().username("yeni").emailUser("  ").emailDomain("").build();
+        when(userRepository.existsByUsername("yeni")).thenReturn(false);
+        when(passwordEncoder.encode("gizli123")).thenReturn("$2a$10$hash");
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        User saved = userService.save(form, "gizli123");
+
+        assertThat(saved.getEmailUser()).isNull();
+        assertThat(saved.getEmailDomain()).isNull();
+    }
+
+    @Test
     void save_whenEmailBelongsToAnotherUser_throwsIllegalArgument() {
         User form = User.builder().username("yeni")
                 .emailUser("ali").emailDomain("ornek.com").build();

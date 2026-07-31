@@ -41,6 +41,18 @@ public class UserService {
     @Transactional
     public User save(User form, String rawPassword) {
         boolean isNew = form.getUserId() == null;
+        // Boş string'ler DB'deki filtrelenmiş UNIQUE indekslerin (Username,
+        // EmailUser+EmailDomain) NULL muafiyetinden yararlanamaz; null'a çevrilmezse
+        // iki boş kayıt "duplicate key" hatasıyla çakışır.
+        if (form.getUsername() != null && form.getUsername().isBlank()) {
+            form.setUsername(null);
+        }
+        if (form.getEmailUser() != null && form.getEmailUser().isBlank()) {
+            form.setEmailUser(null);
+        }
+        if (form.getEmailDomain() != null && form.getEmailDomain().isBlank()) {
+            form.setEmailDomain(null);
+        }
         // Username artık şemada nullable (ör. yalnızca SSO kullanıcıları); benzersizlik
         // kontrolü sadece dolu bir kullanıcı adı verildiğinde uygulanır.
         if (form.getUsername() != null && !form.getUsername().isBlank()) {
