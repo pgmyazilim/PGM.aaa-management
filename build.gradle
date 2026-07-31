@@ -36,3 +36,26 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+// --- Docker image build & push ------------------------------------------------
+
+def deployImageName = "10.99.100.115:5000/aaa-management:latest"
+
+def dockerBuild = tasks.register("dockerBuild", Exec) {
+    group = "docker"
+    description = "Builds the Docker image ($deployImageName)."
+    dependsOn tasks.named("bootJar")
+    commandLine "docker", "build", "-t", deployImageName, "."
+}
+
+def dockerPush = tasks.register("dockerPush", Exec) {
+    group = "docker"
+    description = "Pushes the Docker image ($deployImageName) to the registry."
+    dependsOn dockerBuild
+    commandLine "docker", "push", deployImageName
+}
+
+tasks.register("deployImage") {
+    group = "docker"
+    description = "bootJar -> docker build -> docker push."
+    dependsOn dockerPush
+}
