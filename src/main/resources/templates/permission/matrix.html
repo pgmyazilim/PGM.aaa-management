@@ -90,6 +90,7 @@
                     <th class="px-4 py-3 text-center">Son Güncelleme</th>
                     <th class="px-4 py-3 text-center">Süre Sonu</th>
                     <th class="px-4 py-3 text-center">Kullanım</th>
+                    <th class="px-4 py-3 text-center">İşlem</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -117,9 +118,17 @@
                     <td class="px-4 py-2 text-center text-xs"
                         th:classappend="${perm.allowedExecutionCount != null and perm.usedExecutionCount >= perm.allowedExecutionCount} ? 'text-red-500 font-medium' : 'text-slate-500'"
                         th:text="${perm.allowedExecutionCount != null} ? ${perm.usedExecutionCount + ' / ' + perm.allowedExecutionCount} : '—'">—</td>
+                    <td class="px-4 py-2 text-center">
+                        <form th:action="@{/permissions/{id}/delete(id=${perm.groupActionPermissionId})}" method="post"
+                              class="inline"
+                              onsubmit="return confirm('Bu yetkiyi gruptan kaldırmak istediğinize emin misiniz?')">
+                            <input type="hidden" name="groupId" th:value="${perm.userGroup.userGroupId}"/>
+                            <button type="submit" class="text-red-500 hover:underline text-xs">Sil</button>
+                        </form>
+                    </td>
                 </tr>
                 <tr th:if="${permissions.empty}">
-                    <td colspan="6" class="px-4 py-8 text-center text-slate-400">
+                    <td colspan="7" class="px-4 py-8 text-center text-slate-400">
                         Bu grup için henüz yetki tanımlanmamış.
                     </td>
                 </tr>
