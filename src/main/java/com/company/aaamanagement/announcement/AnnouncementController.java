@@ -1,5 +1,6 @@
 package com.company.aaamanagement.announcement;
 
+import com.company.aaamanagement.common.LocalTimeService;
 import com.company.aaamanagement.domain.Announcement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class AnnouncementController {
 
     private final AnnouncementService announcementService;
+    private final LocalTimeService localTimeService;
 
     @GetMapping
     public String list(@RequestParam(value = "search", required = false) String search,
@@ -45,6 +47,8 @@ public class AnnouncementController {
     @PostMapping("/save")
     public String save(@ModelAttribute Announcement announcement,
                        @RequestParam(value = "createdByUserId", required = false) Integer createdByUserId) {
+        announcement.setPublishFromUtc(localTimeService.toUtc(announcement.getPublishFromUtc()));
+        announcement.setPublishUntilUtc(localTimeService.toUtc(announcement.getPublishUntilUtc()));
         announcementService.saveAnnouncement(announcement, createdByUserId);
         return "redirect:/announcements";
     }

@@ -1,5 +1,6 @@
 package com.company.aaamanagement.audit;
 
+import com.company.aaamanagement.common.LocalTimeService;
 import com.company.aaamanagement.domain.OperationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 public class AuditController {
 
     private final AuditService auditService;
+    private final LocalTimeService localTimeService;
 
     @GetMapping("/action-logs")
     public String actionLogs(@RequestParam(value = "actionId", required = false) Integer actionId,
@@ -25,7 +27,8 @@ public class AuditController {
                               @RequestParam(value = "page", defaultValue = "0") int page,
                               @RequestParam(value = "size", defaultValue = "50") int size,
                               Model model) {
-        model.addAttribute("logs", auditService.listActionLogs(actionId, actorUserId, success, from, to, page, size));
+        model.addAttribute("logs", auditService.listActionLogs(actionId, actorUserId, success,
+                localTimeService.toUtc(from), localTimeService.toUtc(to), page, size));
         model.addAttribute("allActions", auditService.getAllActions());
         model.addAttribute("allUsers", auditService.getAllUsersForFilter());
         model.addAttribute("selectedActionId", actionId);
@@ -45,7 +48,8 @@ public class AuditController {
                             @RequestParam(value = "page", defaultValue = "0") int page,
                             @RequestParam(value = "size", defaultValue = "50") int size,
                             Model model) {
-        model.addAttribute("sessions", auditService.listSessions(userId, open, from, to, page, size));
+        model.addAttribute("sessions", auditService.listSessions(userId, open,
+                localTimeService.toUtc(from), localTimeService.toUtc(to), page, size));
         model.addAttribute("activePage", "sessions");
         return "audit/sessions";
     }
@@ -59,7 +63,8 @@ public class AuditController {
                                 @RequestParam(value = "page", defaultValue = "0") int page,
                                 @RequestParam(value = "size", defaultValue = "50") int size,
                                 Model model) {
-        model.addAttribute("audits", auditService.listRecordAudits(tableId, actorUserId, opType, from, to, page, size));
+        model.addAttribute("audits", auditService.listRecordAudits(tableId, actorUserId, opType,
+                localTimeService.toUtc(from), localTimeService.toUtc(to), page, size));
         model.addAttribute("trackedTables", auditService.getAllTrackedTables());
         model.addAttribute("operationTypes", auditService.getOperationTypes());
         model.addAttribute("allUsers", auditService.getAllUsersForFilter());

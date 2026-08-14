@@ -105,7 +105,7 @@
                 </p>
                 <p class="text-sm mt-1" th:if="${user.lockedUntilUtc != null}">
                     <span class="text-red-600 font-medium">Kilitli</span> —
-                    <span th:text="${#temporals.format(user.lockedUntilUtc, 'dd.MM.yyyy HH:mm')} + ' UTC tarihine kadar'">—</span>
+                    <span th:text="${#temporals.format(@localTimeService.toLocal(user.lockedUntilUtc), 'dd.MM.yyyy HH:mm')} + ' tarihine kadar'">—</span>
                 </p>
                 <form th:action="@{/users/{id}/unlock(id=${user.userId})}" method="post" class="mt-3">
                     <button type="submit"

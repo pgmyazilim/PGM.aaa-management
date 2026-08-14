@@ -1,4 +1,5 @@
 FROM eclipse-temurin:25-jre
+ENV TZ=Europe/Nicosia
 WORKDIR /app
 COPY build/libs/*.jar /app/
 RUN set -eux; \

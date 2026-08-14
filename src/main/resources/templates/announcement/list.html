@@ -50,9 +50,9 @@
                               th:text="${a.severity}">info</span>
                     </td>
                     <td class="px-4 py-2 text-xs text-slate-500">
-                        <span th:text="${#temporals.format(a.publishFromUtc, 'dd.MM.yyyy HH:mm')}">—</span>
+                        <span th:text="${#temporals.format(@localTimeService.toLocal(a.publishFromUtc), 'dd.MM.yyyy HH:mm')}">—</span>
                         <span th:if="${a.publishUntilUtc != null}"
-                              th:text="'→ ' + ${#temporals.format(a.publishUntilUtc, 'dd.MM.yyyy HH:mm')}"></span>
+                              th:text="'→ ' + ${#temporals.format(@localTimeService.toLocal(a.publishUntilUtc), 'dd.MM.yyyy HH:mm')}"></span>
                     </td>
                     <td class="px-4 py-2 text-center">
                         <span th:if="${a.active}" class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded">Aktif</span>

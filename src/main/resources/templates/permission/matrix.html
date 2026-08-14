@@ -111,10 +111,10 @@
                                class="w-5 h-5 accent-green-500 cursor-pointer"/>
                     </td>
                     <td class="px-4 py-2 text-center text-xs text-slate-500"
-                        th:text="${perm.modifiedAtUtc != null} ? ${#temporals.format(perm.modifiedAtUtc, 'dd.MM.yyyy')} : '—'">—</td>
+                        th:text="${perm.modifiedAtUtc != null} ? ${#temporals.format(@localTimeService.toLocal(perm.modifiedAtUtc), 'dd.MM.yyyy')} : '—'">—</td>
                     <td class="px-4 py-2 text-center text-xs"
                         th:classappend="${perm.expiresAtUtc != null} ? 'text-orange-500 font-medium' : 'text-slate-400'"
-                        th:text="${perm.expiresAtUtc != null} ? ${#temporals.format(perm.expiresAtUtc, 'dd.MM.yyyy')} : '—'">—</td>
+                        th:text="${perm.expiresAtUtc != null} ? ${#temporals.format(@localTimeService.toLocal(perm.expiresAtUtc), 'dd.MM.yyyy')} : '—'">—</td>
                     <td class="px-4 py-2 text-center text-xs"
                         th:classappend="${perm.allowedExecutionCount != null and perm.usedExecutionCount >= perm.allowedExecutionCount} ? 'text-red-500 font-medium' : 'text-slate-500'"
                         th:text="${perm.allowedExecutionCount != null} ? ${perm.usedExecutionCount + ' / ' + perm.allowedExecutionCount} : '—'">—</td>

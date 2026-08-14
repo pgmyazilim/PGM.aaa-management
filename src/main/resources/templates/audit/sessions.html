@@ -49,13 +49,13 @@
                         <span th:unless="${s.open}" class="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded">Kapalı</span>
                     </td>
                     <td class="px-4 py-2 text-xs text-slate-500"
-                        th:text="${#temporals.format(s.openedAtUtc, 'dd.MM.yyyy HH:mm')}">—</td>
+                        th:text="${#temporals.format(@localTimeService.toLocal(s.openedAtUtc), 'dd.MM.yyyy HH:mm')}">—</td>
                     <td class="px-4 py-2 text-xs text-slate-500"
-                        th:text="${s.closedAtUtc != null} ? ${#temporals.format(s.closedAtUtc, 'dd.MM.yyyy HH:mm')} : '—'">—</td>
+                        th:text="${s.closedAtUtc != null} ? ${#temporals.format(@localTimeService.toLocal(s.closedAtUtc), 'dd.MM.yyyy HH:mm')} : '—'">—</td>
                     <td class="px-4 py-2 text-xs text-slate-500"
-                        th:text="${s.expiresAtUtc != null} ? ${#temporals.format(s.expiresAtUtc, 'dd.MM.yyyy HH:mm')} : '—'">—</td>
+                        th:text="${s.expiresAtUtc != null} ? ${#temporals.format(@localTimeService.toLocal(s.expiresAtUtc), 'dd.MM.yyyy HH:mm')} : '—'">—</td>
                     <td class="px-4 py-2 text-xs text-slate-500"
-                        th:text="${s.lastActivityUtc != null} ? ${#temporals.format(s.lastActivityUtc, 'dd.MM.yyyy HH:mm')} : '—'">—</td>
+                        th:text="${s.lastActivityUtc != null} ? ${#temporals.format(@localTimeService.toLocal(s.lastActivityUtc), 'dd.MM.yyyy HH:mm')} : '—'">—</td>
                     <td class="px-4 py-2 font-mono text-xs" th:text="${s.clientIpAddress} ?: '—'">—</td>
                 </tr>
                 <tr th:if="${sessions.content.empty}">

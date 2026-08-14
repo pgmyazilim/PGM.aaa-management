@@ -46,8 +46,8 @@
                             th:text="${audit.session != null} ? ${audit.session.sessionKey} : '—'">—</dd>
                     </div>
                     <div>
-                        <dt class="text-xs font-semibold text-slate-500">Tarih (UTC)</dt>
-                        <dd th:text="${#temporals.format(audit.occurredAtUtc, 'dd.MM.yyyy HH:mm:ss')}">—</dd>
+                        <dt class="text-xs font-semibold text-slate-500">Tarih</dt>
+                        <dd th:text="${#temporals.format(@localTimeService.toLocal(audit.occurredAtUtc), 'dd.MM.yyyy HH:mm:ss')}">—</dd>
                     </div>
                 </dl>
             </div>
@@ -81,8 +81,8 @@
                         </dd>
                     </div>
                     <div>
-                        <dt class="text-xs font-semibold text-slate-500">Tarih (UTC)</dt>
-                        <dd th:text="${#temporals.format(audit.actionLog.occurredAtUtc, 'dd.MM.yyyy HH:mm:ss')}">—</dd>
+                        <dt class="text-xs font-semibold text-slate-500">Tarih</dt>
+                        <dd th:text="${#temporals.format(@localTimeService.toLocal(audit.actionLog.occurredAtUtc), 'dd.MM.yyyy HH:mm:ss')}">—</dd>
                     </div>
                 </dl>
                 <div class="mb-3">

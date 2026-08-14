@@ -32,7 +32,7 @@
                     class="border-b border-slate-100">
                     <td class="px-4 py-2 font-medium" th:text="${p.name}">Proje</td>
                     <td class="px-4 py-2 text-xs text-slate-500"
-                        th:text="${#temporals.format(p.modifiedAtUtc, 'dd.MM.yyyy HH:mm')}">—</td>
+                        th:text="${#temporals.format(@localTimeService.toLocal(p.modifiedAtUtc), 'dd.MM.yyyy HH:mm')}">—</td>
                     <td class="px-4 py-2 text-center space-x-2">
                         <a th:href="@{/infrastructure/projects/{id}/edit(id=${p.projectId})}"
                            class="text-blue-600 hover:underline text-xs">Düzenle</a>

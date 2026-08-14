@@ -51,16 +51,16 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Yayın Başlangıcı (UTC)</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Yayın Başlangıcı</label>
                         <input type="datetime-local" name="publishFromUtc"
-                               th:value="${announcement.publishFromUtc != null} ? ${#temporals.format(announcement.publishFromUtc, 'yyyy-MM-dd''T''HH:mm')} : ''"
+                               th:value="${announcement.publishFromUtc != null} ? ${#temporals.format(@localTimeService.toLocal(announcement.publishFromUtc), 'yyyy-MM-dd''T''HH:mm')} : ''"
                                class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none"/>
                         <p class="text-xs text-slate-400 mt-1">Boş bırakılırsa şimdi başlar.</p>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Yayın Bitişi (UTC)</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Yayın Bitişi</label>
                         <input type="datetime-local" name="publishUntilUtc"
-                               th:value="${announcement.publishUntilUtc != null} ? ${#temporals.format(announcement.publishUntilUtc, 'yyyy-MM-dd''T''HH:mm')} : ''"
+                               th:value="${announcement.publishUntilUtc != null} ? ${#temporals.format(@localTimeService.toLocal(announcement.publishUntilUtc), 'yyyy-MM-dd''T''HH:mm')} : ''"
                                class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none"/>
                         <p class="text-xs text-slate-400 mt-1">Boş bırakılırsa süresiz yayında kalır.</p>
                     </div>

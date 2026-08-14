@@ -38,7 +38,7 @@
                     <td class="px-4 py-2 text-xs text-slate-500 font-mono" th:text="${t.actorTrackingTypes} ?: '—'">—</td>
                     <td class="px-4 py-2 text-xs text-slate-500 font-mono" th:text="${t.recordTrackingTypes} ?: '—'">—</td>
                     <td class="px-4 py-2 text-xs text-slate-500"
-                        th:text="${#temporals.format(t.modifiedAtUtc, 'dd.MM.yyyy HH:mm')}">—</td>
+                        th:text="${#temporals.format(@localTimeService.toLocal(t.modifiedAtUtc), 'dd.MM.yyyy HH:mm')}">—</td>
                     <td class="px-4 py-2 text-center space-x-2">
                         <a th:href="@{/audit/tracked-tables/{id}/edit(id=${t.trackedTableId})}"
                            class="text-blue-600 hover:underline text-xs">Düzenle</a>

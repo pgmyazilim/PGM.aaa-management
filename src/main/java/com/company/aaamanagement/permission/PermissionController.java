@@ -1,5 +1,6 @@
 package com.company.aaamanagement.permission;
 
+import com.company.aaamanagement.common.LocalTimeService;
 import com.company.aaamanagement.domain.GroupActionPermission;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import java.util.Map;
 public class PermissionController {
 
     private final PermissionService permissionService;
+    private final LocalTimeService localTimeService;
 
     @GetMapping
     public String matrix(@RequestParam(value = "groupId", required = false) Integer groupId,
@@ -54,7 +56,7 @@ public class PermissionController {
                          @RequestParam(value = "expiresAtUtc", required = false) String expiresAtUtc,
                          @RequestParam(value = "allowedExecutionCount", required = false) Short allowedExecutionCount) {
         LocalDateTime expires = expiresAtUtc != null && !expiresAtUtc.isBlank()
-                ? LocalDateTime.parse(expiresAtUtc) : null;
+                ? localTimeService.toUtc(LocalDateTime.parse(expiresAtUtc)) : null;
         permissionService.upsertPermission(actionId, groupId, allowed, expires, allowedExecutionCount);
         return "redirect:/permissions?groupId=" + groupId;
     }
