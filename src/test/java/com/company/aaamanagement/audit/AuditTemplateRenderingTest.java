@@ -1,5 +1,6 @@
 package com.company.aaamanagement.audit;
 
+import com.company.aaamanagement.common.LocalTimeService;
 import com.company.aaamanagement.domain.Action;
 import com.company.aaamanagement.domain.ActionLog;
 import com.company.aaamanagement.domain.Module;
@@ -9,6 +10,7 @@ import com.company.aaamanagement.domain.Session;
 import com.company.aaamanagement.domain.TrackedTable;
 import com.company.aaamanagement.domain.User;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -18,6 +20,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.spring6.dialect.SpringStandardDialect;
+import org.thymeleaf.spring6.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.FileTemplateResolver;
 import org.thymeleaf.web.servlet.IServletWebExchange;
@@ -59,6 +62,15 @@ class AuditTemplateRenderingTest {
         JakartaServletWebApplication webApplication = JakartaServletWebApplication.buildApplication(servletContext);
         IServletWebExchange exchange = webApplication.buildExchange(request, response);
         WebContext ctx = new WebContext(exchange, Locale.forLanguageTag("tr"));
+
+        // @localTimeService.toLocal(...) gibi Spring bean referanslarının şablonlarda
+        // (örn. audit/record-audit-detail.html) çözülebilmesi için bean resolver'ı bağla.
+        GenericApplicationContext beanContext = new GenericApplicationContext();
+        beanContext.registerBean("localTimeService", LocalTimeService.class);
+        beanContext.refresh();
+        ctx.setVariable(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME,
+                new ThymeleafEvaluationContext(beanContext, null));
+
         vars.forEach(ctx::setVariable);
         return ctx;
     }
