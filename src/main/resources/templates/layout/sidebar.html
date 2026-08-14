@@ -4,7 +4,7 @@
 <nav th:fragment="sidebar(activePage)"
      class="w-56 min-h-screen bg-slate-800 text-slate-300 flex flex-col flex-shrink-0">
     <div class="px-4 py-5 border-b border-slate-700">
-        <span class="text-white font-bold text-base">AAA Yönetim</span>
+        <span class="text-white font-bold text-base" th:text="'AAA Yönetim (' + ${dbMode} + ')'">AAA Yönetim</span>
     </div>
     <ul class="flex-1 py-3 text-sm">
         <li>
@@ -98,6 +98,22 @@
             </a>
         </li>
     </ul>
+    <div class="px-4 py-3 border-t border-slate-700">
+        <form id="dbModeForm" method="post" th:action="@{/db-mode/toggle}" th:attr="data-dbmode=${dbMode}">
+            <button type="submit"
+                    th:classappend="${dbMode == 'DEV'} ? 'bg-orange-600 hover:bg-orange-700' : 'bg-slate-600 hover:bg-slate-500'"
+                    class="w-full text-white text-sm font-medium rounded px-3 py-2 transition-colors">
+                <span th:text="${dbMode == 'DEV'} ? 'Prod\'a Geç' : 'Dev\'e Geç'">Prod'a Geç</span>
+            </button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('dbModeForm').addEventListener('submit', function (e) {
+            if (this.dataset.dbmode === 'DEV' && !confirm('Prod veritabanına geçiyorsunuz, emin misiniz?')) {
+                e.preventDefault();
+            }
+        });
+    </script>
     <th:block th:replace="~{layout/select-search :: script}"></th:block>
 </nav>
 </body>

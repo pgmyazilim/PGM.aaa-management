@@ -2,7 +2,6 @@ spring:
   application:
     name: AAAManagement
   datasource:
-    url: jdbc:sqlserver://10.99.100.117:1433;databaseName=AAA_DEV;encrypt=false;trustServerCertificate=true
     username: sa
     password: Dgmm!Dev*26
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
@@ -26,6 +25,9 @@ spring:
     mode: HTML
 
 aaa:
+  datasource:
+    dev-url: jdbc:sqlserver://10.99.100.117:1433;databaseName=AAA_DEV;encrypt=false;trustServerCertificate=true
+    prod-url: jdbc:sqlserver://10.99.100.117:1433;databaseName=AAA_PROD;encrypt=false;trustServerCertificate=true
   crypto:
     # Base64 kodlu 16/24/32 baytlık AES anahtarı (DatabaseCredentials.PasswordEncrypted için).
     # Üretimde ortam değişkeninden verin; boşsa şifreleme gerektiren işlemler hata verir.
