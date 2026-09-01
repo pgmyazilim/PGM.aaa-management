@@ -17,8 +17,6 @@ spring:
         dialect: org.hibernate.dialect.SQLServerDialect
         default_schema: aaa
         format_sql: true
-        jdbc:
-          time_zone: UTC
   thymeleaf:
     cache: false
     encoding: UTF-8
