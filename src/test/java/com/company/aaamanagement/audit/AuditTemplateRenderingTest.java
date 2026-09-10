@@ -141,6 +141,12 @@ class AuditTemplateRenderingTest {
         assertThat(outWithLog).contains("test notu");
         assertThat(outWithLog).contains("test ek bilgi");
         assertThat(outWithLog).contains("kayıt ek bilgisi");
+        // Kayıt Değerleri artık istemci tarafında okunabilir tabloya dönüştürülüyor;
+        // ham JSON gizli <pre> içinde korunuyor, biçimlendirme hedefi ve tetikleyici mevcut.
+        assertThat(outWithLog).contains("id=\"recordValuesFormatted\"");
+        assertThat(outWithLog).contains("id=\"recordValuesRaw\"");
+        assertThat(outWithLog).contains("id=\"toggleRawRecordValues\"");
+        assertThat(outWithLog).contains("{&quot;foo&quot;:&quot;bar&quot;}");
 
         RecordAudit withoutLog = RecordAudit.builder()
                 .recordAuditId(2L)
