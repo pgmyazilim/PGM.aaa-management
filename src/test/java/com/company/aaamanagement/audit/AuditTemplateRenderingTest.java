@@ -163,32 +163,6 @@ class AuditTemplateRenderingTest {
     }
 
     @Test
-    void actionLogsListTemplate_parsesAndRendersRowsWithDataHref() {
-        User actor = user(4, "Ada", "Lovelace");
-        Module module = Module.builder().moduleId(1).name("Kimlik").build();
-        Action action = Action.builder().actionId(1).module(module).name("Giriş").build();
-        ActionLog row = ActionLog.builder()
-                .actionLogId(77L)
-                .action(action)
-                .actorUser(actor)
-                .success(true)
-                .occurredAtUtc(LocalDateTime.now())
-                .build();
-
-        Map<String, Object> vars = Map.of(
-                "logs", new PageImpl<>(List.of(row), PageRequest.of(0, 50), 1),
-                "allActions", List.of(action),
-                "allUsers", List.of(actor),
-                "activePage", "action-logs"
-        );
-
-        String out = buildEngine().process("audit/action-logs", realWebContext(vars));
-
-        assertThat(out).contains("data-href=\"/audit/action-logs/77\"");
-        assertThat(out).doesNotContain("onclick");
-    }
-
-    @Test
     void actionLogDetailTemplate_parsesAndRendersJsonAndPlainExtraInfo() {
         User actor = user(3, "Alan", "Turing");
         Module module = Module.builder().moduleId(1).name("Kimlik").build();
@@ -235,5 +209,31 @@ class AuditTemplateRenderingTest {
         String outEmpty = buildEngine().process("audit/action-log-detail",
                 realWebContext(Map.of("log", withoutExtraInfo, "activePage", "action-logs")));
         assertThat(outEmpty).contains("Ek bilgi yok");
+    }
+
+    @Test
+    void actionLogsListTemplate_parsesAndRendersRowsWithDataHref() {
+        User actor = user(4, "Ada", "Lovelace");
+        Module module = Module.builder().moduleId(1).name("Kimlik").build();
+        Action action = Action.builder().actionId(1).module(module).name("Giriş").build();
+        ActionLog row = ActionLog.builder()
+                .actionLogId(77L)
+                .action(action)
+                .actorUser(actor)
+                .success(true)
+                .occurredAtUtc(LocalDateTime.now())
+                .build();
+
+        Map<String, Object> vars = Map.of(
+                "logs", new PageImpl<>(List.of(row), PageRequest.of(0, 50), 1),
+                "allActions", List.of(action),
+                "allUsers", List.of(actor),
+                "activePage", "action-logs"
+        );
+
+        String out = buildEngine().process("audit/action-logs", realWebContext(vars));
+
+        assertThat(out).contains("data-href=\"/audit/action-logs/77\"");
+        assertThat(out).doesNotContain("onclick");
     }
 }
