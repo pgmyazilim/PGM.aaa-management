@@ -161,4 +161,53 @@ class AuditTemplateRenderingTest {
                 realWebContext(Map.of("audit", withoutLog)));
         assertThat(outWithoutLog).contains("Bağlı aksiyon logu yok");
     }
+
+    @Test
+    void actionLogDetailTemplate_parsesAndRendersJsonAndPlainExtraInfo() {
+        User actor = user(3, "Alan", "Turing");
+        Module module = Module.builder().moduleId(1).name("Kimlik").build();
+        Action action = Action.builder().actionId(1).module(module).name("Kullanıcı Güncelle").build();
+
+        ActionLog withJsonExtraInfo = ActionLog.builder()
+                .actionLogId(10L)
+                .action(action)
+                .actorUser(actor)
+                .success(true)
+                .occurredAtUtc(LocalDateTime.now())
+                .userNote("test notu")
+                .extraInfo("{\"foo\":\"bar\"}")
+                .build();
+
+        String outJson = buildEngine().process("audit/action-log-detail",
+                realWebContext(Map.of("log", withJsonExtraInfo, "activePage", "action-logs")));
+        assertThat(outJson).contains("test notu");
+        assertThat(outJson).contains("{&quot;foo&quot;:&quot;bar&quot;}");
+        assertThat(outJson).contains("id=\"extraInfoFormatted\"");
+        assertThat(outJson).contains("id=\"extraInfoRaw\"");
+        assertThat(outJson).contains("id=\"toggleRawExtraInfo\"");
+
+        ActionLog withPlainExtraInfo = ActionLog.builder()
+                .actionLogId(11L)
+                .action(action)
+                .success(false)
+                .occurredAtUtc(LocalDateTime.now())
+                .extraInfo("düz metin ek bilgi")
+                .build();
+
+        String outPlain = buildEngine().process("audit/action-log-detail",
+                realWebContext(Map.of("log", withPlainExtraInfo, "activePage", "action-logs")));
+        assertThat(outPlain).contains("düz metin ek bilgi");
+        assertThat(outPlain).contains("Not yok");
+
+        ActionLog withoutExtraInfo = ActionLog.builder()
+                .actionLogId(12L)
+                .action(action)
+                .success(true)
+                .occurredAtUtc(LocalDateTime.now())
+                .build();
+
+        String outEmpty = buildEngine().process("audit/action-log-detail",
+                realWebContext(Map.of("log", withoutExtraInfo, "activePage", "action-logs")));
+        assertThat(outEmpty).contains("Ek bilgi yok");
+    }
 }

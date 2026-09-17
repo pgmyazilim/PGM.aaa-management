@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Aksiyon Logu Detayı - AAA Yönetim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div th:replace="~{layout/sidebar :: sidebar('action-logs')}"></div>
+    <main class="flex-1 overflow-y-auto p-6">
+        <div class="max-w-3xl mx-auto space-y-6">
+            <div class="flex items-center gap-3">
+                <a th:href="@{/audit/action-logs}" class="text-slate-500 hover:text-slate-700 text-sm">← Aksiyon Logları</a>
+                <h1 class="text-xl font-bold text-slate-800">Aksiyon Logu Detayı</h1>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="font-semibold text-slate-700 mb-4">Genel Bilgiler</h2>
+                <dl class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <dt class="text-xs font-semibold text-slate-500">İşlem</dt>
+                        <dd th:text="${log.action.module.name} + ' / ' + ${log.action.name}">İşlem</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold text-slate-500">Kullanıcı</dt>
+                        <dd th:text="${log.actorUser != null} ? ${log.actorUser.fullName} : '—'">Kullanıcı</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold text-slate-500">Sonuç</dt>
+                        <dd>
+                            <span th:if="${log.success}" class="text-green-600 font-bold text-xs">✓ Başarılı</span>
+                            <span th:unless="${log.success}" class="text-red-500 font-bold text-xs">✗ Başarısız</span>
+                        </dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold text-slate-500">Oturum</dt>
+                        <dd class="font-mono text-xs text-slate-500"
+                            th:text="${log.session != null} ? ${log.session.sessionKey} : '—'">—</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold text-slate-500">Tarih</dt>
+                        <dd th:text="${#temporals.format(@localTimeService.toLocal(log.occurredAtUtc), 'dd.MM.yyyy HH:mm:ss')}">—</dd>
+                    </div>
+                </dl>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="font-semibold text-slate-700 mb-2">Kullanıcı Notu</h2>
+                <p th:if="${log.userNote != null}" class="text-sm whitespace-pre-wrap" th:text="${log.userNote}">—</p>
+                <p th:if="${log.userNote == null}" class="text-sm text-slate-400">— Not yok —</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="font-semibold text-slate-700">Ek Bilgi</h2>
+                    <button type="button" id="toggleRawExtraInfo"
+                            th:if="${log.extraInfo != null}"
+                            class="hidden text-xs text-slate-500 hover:text-slate-700 underline">Ham JSON göster</button>
+                </div>
+                <div th:if="${log.extraInfo != null}">
+                    <div id="extraInfoFormatted" class="text-sm text-slate-600"></div>
+                    <pre id="extraInfoRaw"
+                         class="bg-slate-50 border border-slate-200 rounded p-3 text-xs overflow-x-auto whitespace-pre-wrap"
+                         th:text="${log.extraInfo}">{}</pre>
+                </div>
+                <p th:if="${log.extraInfo == null}" class="text-sm text-slate-400">— Ek bilgi yok —</p>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script th:inline="none">
+    // "Ek Bilgi" içindeki JSON'u okunabilir bir tabloya dönüştürür.
+    // JS kapalıysa ya da geçerli JSON değilse ham metin <pre> bloğu olduğu gibi görünmeye devam eder.
+    (function () {
+        var raw = document.getElementById('extraInfoRaw');
+        var formatted = document.getElementById('extraInfoFormatted');
+        var toggle = document.getElementById('toggleRawExtraInfo');
+        if (!raw || !formatted) return;
+
+        var data;
+        try {
+            data = JSON.parse(raw.textContent.trim());
+        } catch (e) {
+            // Geçerli JSON değil: ham metni olduğu gibi bırak.
+            return;
+        }
+
+        formatted.innerHTML = render(data);
+        raw.textContent = JSON.stringify(data, null, 2);
+        raw.classList.add('hidden');
+
+        if (toggle) {
+            toggle.classList.remove('hidden');
+            toggle.addEventListener('click', function () {
+                var rawHidden = raw.classList.toggle('hidden');
+                formatted.classList.toggle('hidden', !rawHidden);
+                toggle.textContent = rawHidden ? 'Ham JSON göster' : 'Ham JSON gizle';
+            });
+        }
+
+        function esc(s) {
+            return String(s).replace(/[&<>"]/g, function (c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+            });
+        }
+
+        function isScalar(v) {
+            return v === null || typeof v !== 'object';
+        }
+
+        function scalar(v) {
+            if (v === null) return '<span class="text-slate-400 italic">yok</span>';
+            if (typeof v === 'boolean') return '<span class="font-mono text-indigo-600">' + (v ? 'evet' : 'hayır') + '</span>';
+            if (typeof v === 'number') return '<span class="font-mono text-slate-700">' + v + '</span>';
+            if (v === '') return '<span class="text-slate-400 italic">boş</span>';
+            return '<span class="text-slate-800">' + esc(v) + '</span>';
+        }
+
+        function render(value) {
+            if (value && typeof value === 'object' && Array.isArray(value.changes)) {
+                return changesTable(value.changes);
+            }
+            if (Array.isArray(value)) return list(value);
+            if (value && typeof value === 'object') return kvTable(value);
+            return '<div>' + scalar(value) + '</div>';
+        }
+
+        function changesTable(changes) {
+            if (!changes.length) return '<p class="text-slate-400">— Değişiklik kaydı yok —</p>';
+            var rows = changes.map(function (c) {
+                return '<tr class="border-t border-slate-100 align-top">' +
+                    '<td class="py-1.5 pr-4 font-medium text-slate-600 whitespace-nowrap">' + esc(c.field) + '</td>' +
+                    '<td class="py-1.5 pr-4 text-rose-600 line-through">' + scalar(c.old) + '</td>' +
+                    '<td class="py-1.5 text-emerald-700">' + scalar(c.new) + '</td>' +
+                    '</tr>';
+            }).join('');
+            return '<table class="w-full">' +
+                '<thead><tr class="text-xs font-semibold text-slate-400 text-left">' +
+                '<th class="pb-1 pr-4">Alan</th><th class="pb-1 pr-4">Eski Değer</th><th class="pb-1">Yeni Değer</th>' +
+                '</tr></thead><tbody>' + rows + '</tbody></table>';
+        }
+
+        function kvTable(obj) {
+            var keys = Object.keys(obj);
+            if (!keys.length) return '<p class="text-slate-400">— Boş —</p>';
+            var rows = keys.map(function (k) {
+                var v = obj[k];
+                var cell = isScalar(v) ? scalar(v) : '<div class="mt-1">' + render(v) + '</div>';
+                return '<tr class="border-t border-slate-100 align-top">' +
+                    '<td class="py-1.5 pr-4 font-medium text-slate-600 whitespace-nowrap">' + esc(k) + '</td>' +
+                    '<td class="py-1.5 w-full">' + cell + '</td>' +
+                    '</tr>';
+            }).join('');
+            return '<table class="w-full"><tbody>' + rows + '</tbody></table>';
+        }
+
+        function list(arr) {
+            if (!arr.length) return '<p class="text-slate-400">— Boş liste —</p>';
+            if (arr.every(isScalar)) {
+                return '<ul class="list-disc list-inside space-y-0.5">' +
+                    arr.map(function (v) { return '<li>' + scalar(v) + '</li>'; }).join('') + '</ul>';
+            }
+            return '<div class="space-y-2">' + arr.map(function (v, i) {
+                return '<div class="border border-slate-200 rounded p-2">' +
+                    '<div class="text-xs font-semibold text-slate-400 mb-1">#' + (i + 1) + '</div>' +
+                    render(v) + '</div>';
+            }).join('') + '</div>';
+        }
+    })();
+</script>
+</body>
+</html>
