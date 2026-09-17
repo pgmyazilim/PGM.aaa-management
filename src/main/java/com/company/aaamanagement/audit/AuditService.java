@@ -74,4 +74,9 @@ public class AuditService {
         return recordAuditRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Kayıt denetimi bulunamadı: " + id));
     }
+
+    public ActionLog findActionLogById(Long id) {
+        return actionLogRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Aksiyon logu bulunamadı: " + id));
+    }
 }

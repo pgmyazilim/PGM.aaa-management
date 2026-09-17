@@ -101,4 +101,20 @@ class AuditServiceTest {
         assertThatThrownBy(() -> service.findRecordAuditById(9L))
                 .isInstanceOf(EntityNotFoundException.class);
     }
+
+    @Test
+    void findActionLogById_whenFound_returnsIt() {
+        ActionLog log = ActionLog.builder().actionLogId(5L).build();
+        when(actionLogRepository.findById(5L)).thenReturn(Optional.of(log));
+
+        assertThat(service.findActionLogById(5L)).isSameAs(log);
+    }
+
+    @Test
+    void findActionLogById_whenMissing_throwsEntityNotFound() {
+        when(actionLogRepository.findById(9L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.findActionLogById(9L))
+                .isInstanceOf(EntityNotFoundException.class);
+    }
 }
