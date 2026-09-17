@@ -56,8 +56,9 @@
                 </thead>
                 <tbody>
                 <tr th:each="log, stat : ${logs.content}"
+                    th:attr="data-href=@{/audit/action-logs/{id}(id=${log.actionLogId})}"
                     th:classappend="${stat.odd} ? 'bg-white' : 'bg-slate-50'"
-                    class="border-b border-slate-100">
+                    class="border-b border-slate-100 cursor-pointer hover:bg-blue-50 transition-colors">
                     <td class="px-4 py-2 text-slate-400 font-mono text-xs" th:text="${log.actionLogId}">0</td>
                     <td class="px-4 py-2" th:text="${log.action.name}">İşlem</td>
                     <td class="px-4 py-2 text-xs"
@@ -89,5 +90,10 @@
         </div>
     </main>
 </div>
+<script>
+    document.querySelectorAll('tbody tr[data-href]').forEach(function (row) {
+        row.addEventListener('click', function () { window.location.href = row.dataset.href; });
+    });
+</script>
 </body>
 </html>
