@@ -98,12 +98,18 @@
             </a>
         </li>
     </ul>
-    <div class="px-4 py-3 border-t border-slate-700">
+    <div class="px-4 py-3 border-t border-slate-700 space-y-2">
         <form id="dbModeForm" method="post" th:action="@{/db-mode/toggle}" th:attr="data-dbmode=${dbMode}">
             <button type="submit"
                     th:classappend="${dbMode == 'DEV'} ? 'bg-orange-600 hover:bg-orange-700' : 'bg-slate-600 hover:bg-slate-500'"
                     class="w-full text-white text-sm font-medium rounded px-3 py-2 transition-colors">
                 <span th:text="${dbMode == 'DEV'} ? 'Prod\'a Geç' : 'Dev\'e Geç'">Prod'a Geç</span>
+            </button>
+        </form>
+        <form method="post" th:action="@{/logout}">
+            <button type="submit"
+                    class="w-full text-slate-300 text-sm rounded px-3 py-2 border border-slate-600 hover:bg-slate-700 hover:text-white transition-colors">
+                Çıkış Yap
             </button>
         </form>
     </div>

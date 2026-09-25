@@ -23,6 +23,10 @@ spring:
     mode: HTML
 
 aaa:
+  auth:
+    # Yönetim arayüzü giriş bilgileri. Varsayılan YOKTUR: env verilmezse uygulama başlamaz.
+    username: ${AAA_AUTH_USERNAME}
+    password: ${AAA_AUTH_PASSWORD}
   datasource:
     dev-url: jdbc:sqlserver://10.99.100.117:1433;databaseName=AAA_DEV;encrypt=false;trustServerCertificate=true
     prod-url: jdbc:sqlserver://10.99.100.117:1433;databaseName=AAA_PROD;encrypt=false;trustServerCertificate=true
@@ -37,6 +41,14 @@ server:
   port: ${SERVER_PORT:10443}
   servlet:
     context-path: /
+    session:
+      cookie:
+        name: AAAMGMT_SESSION
+        http-only: true
+        # HTTPS arkasında true kalmalı; yalnızca HTTP ile yerel denemede AAA_COOKIE_SECURE=false verin
+        secure: ${AAA_COOKIE_SECURE:true}
+        same-site: strict
+      tracking-modes: cookie
   ssl:
     # HTTPS için AAA_SSL_ENABLED=true verin ve PEM sertifika/anahtar dosyalarını volume olarak bağlayın
     # (varsayılan yollar: /certs/tls.crt ve /certs/tls.key). Kapalıyken uygulama düz HTTP çalışır.
