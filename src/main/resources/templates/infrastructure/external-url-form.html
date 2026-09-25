@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Dış URL Formu</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div th:replace="~{layout/sidebar :: sidebar('infrastructure')}"></div>
+    <main class="flex-1 overflow-y-auto p-6">
+        <div class="max-w-2xl mx-auto space-y-6">
+            <div class="flex items-center gap-3">
+                <a th:href="@{/infrastructure/external-urls}" class="text-slate-500 hover:text-slate-700 text-sm">← Dış URL'ler</a>
+                <h1 class="text-xl font-bold text-slate-800"
+                    th:text="${externalUrl.externalUrlId != null} ? 'Dış URL Düzenle' : 'Yeni Dış URL'">Dış URL</h1>
+            </div>
+            <form th:action="@{/infrastructure/external-urls/save}" method="post"
+                  class="bg-white rounded-lg shadow p-6 space-y-4">
+                <input type="hidden" name="externalUrlId" th:value="${externalUrl.externalUrlId}"/>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Proje *</label>
+                    <select name="project.projectId" required
+                            class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+                        <option value="">— Seçin —</option>
+                        <option th:each="p : ${projects}" th:value="${p.projectId}" th:text="${p.name}"
+                                th:selected="${externalUrl.project != null && externalUrl.project.projectId == p.projectId}">Proje</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Ad *</label>
+                    <input type="text" name="name" th:value="${externalUrl.name}" required maxlength="100"
+                           class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">URL *</label>
+                    <input type="url" name="url" th:value="${externalUrl.url}" required maxlength="2048"
+                           class="w-full border border-slate-300 rounded px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Açıklama</label>
+                    <textarea name="description" rows="3"
+                              class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+                              th:text="${externalUrl.description}"></textarea>
+                </div>
+                <div class="flex gap-3">
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded text-sm hover:bg-blue-700">Kaydet</button>
+                    <a th:href="@{/infrastructure/external-urls}" class="px-6 py-2 rounded text-sm border border-slate-300 hover:bg-slate-50">İptal</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+</body>
+</html>

@@ -21,6 +21,7 @@ public class InfrastructureService {
 
     private final ProjectRepository projectRepository;
     private final ModuleRepository moduleRepository;
+    private final ExternalUrlRepository externalUrlRepository;
     private final DatabaseServerRepository serverRepository;
     private final DatabaseCredentialRepository credentialRepository;
     private final ModuleDatabaseRepository moduleDatabaseRepository;
@@ -70,6 +71,36 @@ public class InfrastructureService {
     @Transactional
     public void deleteModule(Integer id) {
         moduleRepository.deleteById(id);
+    }
+
+    // --- External URLs ---
+    public Page<ExternalUrl> listExternalUrls(Integer projectId, String search, int page, int size) {
+        return externalUrlRepository.findByProjectAndSearch(projectId, search,
+                PageRequest.of(page, size, Sort.by("name")));
+    }
+
+    public ExternalUrl findExternalUrlById(Integer id) {
+        return externalUrlRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Dış URL bulunamadı: " + id));
+    }
+
+    @Transactional
+    public ExternalUrl saveExternalUrl(ExternalUrl externalUrl) {
+        if (externalUrl.getName() == null || externalUrl.getName().isBlank()) {
+            throw new IllegalArgumentException("Ad boş olamaz.");
+        }
+        if (externalUrl.getUrl() == null || externalUrl.getUrl().isBlank()) {
+            throw new IllegalArgumentException("URL boş olamaz.");
+        }
+        externalUrl.setName(externalUrl.getName().trim());
+        externalUrl.setUrl(externalUrl.getUrl().trim());
+        externalUrl.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
+        return externalUrlRepository.save(externalUrl);
+    }
+
+    @Transactional
+    public void deleteExternalUrl(Integer id) {
+        externalUrlRepository.deleteById(id);
     }
 
     // --- Database Servers ---

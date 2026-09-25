@@ -95,6 +95,49 @@ public class InfrastructureController {
         return "redirect:/infrastructure/modules";
     }
 
+    // --- External URLs ---
+    @GetMapping("/external-urls")
+    public String externalUrls(@RequestParam(value = "projectId", required = false) Integer projectId,
+                               @RequestParam(value = "search", required = false) String search,
+                               @RequestParam(value = "page", defaultValue = "0") int page,
+                               @RequestParam(value = "size", defaultValue = "20") int size,
+                               Model model) {
+        model.addAttribute("externalUrls", infraService.listExternalUrls(projectId, search, page, size));
+        model.addAttribute("projects", infraService.getAllProjects());
+        model.addAttribute("selectedProjectId", projectId);
+        model.addAttribute("search", search);
+        model.addAttribute("activePage", "infrastructure");
+        return "infrastructure/external-urls";
+    }
+
+    @GetMapping("/external-urls/new")
+    public String newExternalUrl(Model model) {
+        model.addAttribute("externalUrl", new ExternalUrl());
+        model.addAttribute("projects", infraService.getAllProjects());
+        model.addAttribute("activePage", "infrastructure");
+        return "infrastructure/external-url-form";
+    }
+
+    @GetMapping("/external-urls/{id}/edit")
+    public String editExternalUrl(@PathVariable("id") Integer id, Model model) {
+        model.addAttribute("externalUrl", infraService.findExternalUrlById(id));
+        model.addAttribute("projects", infraService.getAllProjects());
+        model.addAttribute("activePage", "infrastructure");
+        return "infrastructure/external-url-form";
+    }
+
+    @PostMapping("/external-urls/save")
+    public String saveExternalUrl(@ModelAttribute ExternalUrl externalUrl) {
+        infraService.saveExternalUrl(externalUrl);
+        return "redirect:/infrastructure/external-urls";
+    }
+
+    @PostMapping("/external-urls/{id}/delete")
+    public String deleteExternalUrl(@PathVariable("id") Integer id) {
+        infraService.deleteExternalUrl(id);
+        return "redirect:/infrastructure/external-urls";
+    }
+
     // --- Databases ---
     @GetMapping("/databases")
     public String databases(@RequestParam(value = "search", required = false) String search,

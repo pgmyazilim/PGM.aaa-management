@@ -3,6 +3,7 @@ package com.company.aaamanagement.infrastructure;
 import com.company.aaamanagement.crypto.CryptoService;
 import com.company.aaamanagement.domain.DatabaseCredential;
 import com.company.aaamanagement.domain.DatabaseServer;
+import com.company.aaamanagement.domain.ExternalUrl;
 import com.company.aaamanagement.domain.ModuleDatabase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +23,7 @@ class InfrastructureServiceTest {
 
     @Mock ProjectRepository projectRepository;
     @Mock ModuleRepository moduleRepository;
+    @Mock ExternalUrlRepository externalUrlRepository;
     @Mock DatabaseServerRepository serverRepository;
     @Mock DatabaseCredentialRepository credentialRepository;
     @Mock ModuleDatabaseRepository moduleDatabaseRepository;
@@ -63,6 +65,29 @@ class InfrastructureServiceTest {
         assertThat(saved.getDatabaseServer()).isSameAs(server);
         assertThat(saved.getDatabaseName()).isEqualTo("AaaDb");
         assertThat(saved.getDatabaseAlias()).isNull();
+        assertThat(saved.getModifiedAtUtc()).isNotNull();
+    }
+
+    @Test
+    void saveExternalUrl_whenUrlBlank_throwsIllegalArgument() {
+        ExternalUrl e = ExternalUrl.builder().name("Portal").url("  ").build();
+
+        assertThatThrownBy(() -> infrastructureService.saveExternalUrl(e))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("URL");
+
+        verify(externalUrlRepository, never()).save(any());
+    }
+
+    @Test
+    void saveExternalUrl_trimsFieldsAndStampsModifiedAt() {
+        when(externalUrlRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        ExternalUrl e = ExternalUrl.builder().name(" Portal ").url(" https://x.example ").build();
+
+        ExternalUrl saved = infrastructureService.saveExternalUrl(e);
+
+        assertThat(saved.getName()).isEqualTo("Portal");
+        assertThat(saved.getUrl()).isEqualTo("https://x.example");
         assertThat(saved.getModifiedAtUtc()).isNotNull();
     }
 }
