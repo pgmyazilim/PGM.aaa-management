@@ -34,13 +34,13 @@ aaa:
     delay: PT5M
 
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${SERVER_PORT:10443}
   servlet:
     context-path: /
   ssl:
     # HTTPS için AAA_SSL_ENABLED=true verin ve PEM sertifika/anahtar dosyalarını volume olarak bağlayın
     # (varsayılan yollar: /certs/tls.crt ve /certs/tls.key). Kapalıyken uygulama düz HTTP çalışır.
-    enabled: ${AAA_SSL_ENABLED:false}
+    enabled: ${AAA_SSL_ENABLED:true}
     certificate: ${AAA_SSL_CERTIFICATE:file:/certs/tls.crt}
     certificate-private-key: ${AAA_SSL_PRIVATE_KEY:file:/certs/tls.key}
     # Özel anahtar parola korumalıysa doldurun
