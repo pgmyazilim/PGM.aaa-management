@@ -60,7 +60,7 @@
                             class="hidden text-xs text-slate-500 hover:text-slate-700 underline">Ham JSON göster</button>
                 </div>
                 <div th:if="${audit.recordValues != null}">
-                    <div id="recordValuesFormatted" class="text-sm text-slate-600"></div>
+                    <div id="recordValuesFormatted" class="text-sm text-slate-600 [overflow-wrap:anywhere]"></div>
                     <pre id="recordValuesRaw"
                          class="bg-slate-50 border border-slate-200 rounded p-3 text-xs overflow-x-auto whitespace-pre-wrap"
                          th:text="${audit.recordValues}">{}</pre>
