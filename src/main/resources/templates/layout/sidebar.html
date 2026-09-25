@@ -114,6 +114,10 @@
             }
         });
     </script>
+    <div th:if="${clientIp != null}"
+         class="fixed bottom-2 right-3 z-50 text-xs text-slate-500 bg-white/80 border border-slate-200 rounded px-2 py-1 shadow-sm">
+        IP: <span class="font-mono" th:text="${clientIp}">127.0.0.1</span>
+    </div>
     <th:block th:replace="~{layout/select-search :: script}"></th:block>
 </nav>
 </body>
