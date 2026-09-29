@@ -39,6 +39,14 @@
                             th:text="${log.session != null} ? ${log.session.sessionKey} : '—'">—</dd>
                     </div>
                     <div>
+                        <dt class="text-xs font-semibold text-slate-500">İstemci</dt>
+                        <dd th:if="${log.client != null}">
+                            <span th:text="${log.client.name}">İstemci</span>
+                            <span class="block font-mono text-xs text-slate-500" th:text="${log.client.clientKey}">GUID</span>
+                        </dd>
+                        <dd th:if="${log.client == null}">—</dd>
+                    </div>
+                    <div>
                         <dt class="text-xs font-semibold text-slate-500">Tarih</dt>
                         <dd th:text="${#temporals.format(@localTimeService.toLocal(log.occurredAtUtc), 'dd.MM.yyyy HH:mm:ss')}">—</dd>
                     </div>

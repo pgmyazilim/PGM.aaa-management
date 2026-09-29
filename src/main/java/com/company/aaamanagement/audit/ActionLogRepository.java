@@ -15,9 +15,9 @@ public interface ActionLogRepository extends JpaRepository<ActionLog, Long>, Jpa
     @EntityGraph(attributePaths = {"action", "actorUser"})
     Page<ActionLog> findAll(Specification<ActionLog> spec, Pageable pageable);
 
-    // detay ekranı action.module/actorUser/session alanlarına eriştiği için
+    // detay ekranı action.module/actorUser/session/client alanlarına eriştiği için
     // birlikte fetch edilir (open-in-view kapalı, aksi halde LazyInitializationException).
     @Override
-    @EntityGraph(attributePaths = {"action", "action.module", "actorUser", "session"})
+    @EntityGraph(attributePaths = {"action", "action.module", "actorUser", "session", "client"})
     Optional<ActionLog> findById(Long id);
 }

@@ -3,6 +3,7 @@ package com.company.aaamanagement.audit;
 import com.company.aaamanagement.common.LocalTimeService;
 import com.company.aaamanagement.domain.Action;
 import com.company.aaamanagement.domain.ActionLog;
+import com.company.aaamanagement.domain.Client;
 import com.company.aaamanagement.domain.Module;
 import com.company.aaamanagement.domain.OperationType;
 import com.company.aaamanagement.domain.RecordAudit;
@@ -209,6 +210,40 @@ class AuditTemplateRenderingTest {
         String outEmpty = buildEngine().process("audit/action-log-detail",
                 realWebContext(Map.of("log", withoutExtraInfo, "activePage", "action-logs")));
         assertThat(outEmpty).contains("Ek bilgi yok");
+    }
+
+    @Test
+    void actionLogDetailTemplate_showsClientWhenPresent() {
+        Module module = Module.builder().moduleId(1).name("Kimlik").build();
+        Action action = Action.builder().actionId(1).module(module).name("Kullanıcı Güncelle").build();
+        Client client = Client.builder().clientId(3).name("Gocsis Arayüzü")
+                .clientKey(UUID.fromString("3f2504e0-4f89-11d3-9a0c-0305e82c3301")).build();
+
+        ActionLog withClient = ActionLog.builder()
+                .actionLogId(20L)
+                .action(action)
+                .client(client)
+                .success(true)
+                .occurredAtUtc(LocalDateTime.now())
+                .build();
+
+        String outWithClient = buildEngine().process("audit/action-log-detail",
+                realWebContext(Map.of("log", withClient, "activePage", "action-logs")));
+        assertThat(outWithClient).contains("İstemci");
+        assertThat(outWithClient).contains("Gocsis Arayüzü");
+        assertThat(outWithClient).contains("3f2504e0-4f89-11d3-9a0c-0305e82c3301");
+
+        ActionLog withoutClient = ActionLog.builder()
+                .actionLogId(21L)
+                .action(action)
+                .success(true)
+                .occurredAtUtc(LocalDateTime.now())
+                .build();
+
+        String outWithoutClient = buildEngine().process("audit/action-log-detail",
+                realWebContext(Map.of("log", withoutClient, "activePage", "action-logs")));
+        assertThat(outWithoutClient).contains("İstemci");
+        assertThat(outWithoutClient).doesNotContain("3f2504e0-4f89-11d3-9a0c-0305e82c3301");
     }
 
     @Test
