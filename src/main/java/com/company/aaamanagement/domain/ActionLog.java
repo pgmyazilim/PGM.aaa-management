@@ -35,6 +35,10 @@ public class ActionLog {
     @JoinColumn(name = "ActorUserId")
     private User actorUser;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ClientId")
+    private Client client;
+
     @Column(name = "OccurredAtUtc", nullable = false)
     private LocalDateTime occurredAtUtc;
 
