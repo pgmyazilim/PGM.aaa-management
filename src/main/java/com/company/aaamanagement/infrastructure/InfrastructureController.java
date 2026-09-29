@@ -138,6 +138,38 @@ public class InfrastructureController {
         return "redirect:/infrastructure/external-urls";
     }
 
+    // --- Clients (silme yok: ActionLogs.ClientId FK'sı ile bağlı) ---
+    @GetMapping("/clients")
+    public String clients(@RequestParam(value = "search", required = false) String search,
+                          @RequestParam(value = "page", defaultValue = "0") int page,
+                          @RequestParam(value = "size", defaultValue = "20") int size,
+                          Model model) {
+        model.addAttribute("clients", infraService.listClients(search, page, size));
+        model.addAttribute("search", search);
+        model.addAttribute("activePage", "infrastructure");
+        return "infrastructure/clients";
+    }
+
+    @GetMapping("/clients/new")
+    public String newClient(Model model) {
+        model.addAttribute("client", new Client());
+        model.addAttribute("activePage", "infrastructure");
+        return "infrastructure/client-form";
+    }
+
+    @GetMapping("/clients/{id}/edit")
+    public String editClient(@PathVariable("id") Integer id, Model model) {
+        model.addAttribute("client", infraService.findClientById(id));
+        model.addAttribute("activePage", "infrastructure");
+        return "infrastructure/client-form";
+    }
+
+    @PostMapping("/clients/save")
+    public String saveClient(@ModelAttribute Client client) {
+        infraService.saveClient(client);
+        return "redirect:/infrastructure/clients";
+    }
+
     // --- Databases ---
     @GetMapping("/databases")
     public String databases(@RequestParam(value = "search", required = false) String search,
