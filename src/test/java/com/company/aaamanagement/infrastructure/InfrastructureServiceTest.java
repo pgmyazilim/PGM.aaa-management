@@ -1,6 +1,7 @@
 package com.company.aaamanagement.infrastructure;
 
 import com.company.aaamanagement.crypto.CryptoService;
+import com.company.aaamanagement.domain.Client;
 import com.company.aaamanagement.domain.DatabaseCredential;
 import com.company.aaamanagement.domain.DatabaseServer;
 import com.company.aaamanagement.domain.ExternalUrl;
@@ -11,7 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -24,6 +27,7 @@ class InfrastructureServiceTest {
     @Mock ProjectRepository projectRepository;
     @Mock ModuleRepository moduleRepository;
     @Mock ExternalUrlRepository externalUrlRepository;
+    @Mock ClientRepository clientRepository;
     @Mock DatabaseServerRepository serverRepository;
     @Mock DatabaseCredentialRepository credentialRepository;
     @Mock ModuleDatabaseRepository moduleDatabaseRepository;
@@ -88,6 +92,49 @@ class InfrastructureServiceTest {
 
         assertThat(saved.getName()).isEqualTo("Portal");
         assertThat(saved.getUrl()).isEqualTo("https://x.example");
+        assertThat(saved.getModifiedAtUtc()).isNotNull();
+    }
+
+    @Test
+    void saveClient_whenNameBlank_throwsIllegalArgument() {
+        Client c = Client.builder().name("  ").build();
+
+        assertThatThrownBy(() -> infrastructureService.saveClient(c))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Ad");
+
+        verify(clientRepository, never()).save(any());
+    }
+
+    @Test
+    void saveClient_new_trimsNameAndStampsModifiedAt() {
+        when(clientRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        Client c = Client.builder().name(" Gocsis Arayüzü ").description("d").build();
+
+        Client saved = infrastructureService.saveClient(c);
+
+        assertThat(saved.getName()).isEqualTo("Gocsis Arayüzü");
+        assertThat(saved.getModifiedAtUtc()).isNotNull();
+        verify(clientRepository, never()).findById(any());
+    }
+
+    @Test
+    void saveClient_existing_updatesOnlyNameAndDescription() {
+        UUID key = UUID.randomUUID();
+        LocalDateTime created = LocalDateTime.of(2026, 1, 1, 0, 0);
+        Client existing = Client.builder().clientId(5).clientKey(key).createdAtUtc(created)
+                .name("Eski").description("eski").build();
+        when(clientRepository.findById(5)).thenReturn(Optional.of(existing));
+        when(clientRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        Client form = Client.builder().clientId(5).name(" Yeni ").description("yeni").build();
+
+        Client saved = infrastructureService.saveClient(form);
+
+        assertThat(saved).isSameAs(existing);
+        assertThat(saved.getName()).isEqualTo("Yeni");
+        assertThat(saved.getDescription()).isEqualTo("yeni");
+        assertThat(saved.getClientKey()).isEqualTo(key);
+        assertThat(saved.getCreatedAtUtc()).isEqualTo(created);
         assertThat(saved.getModifiedAtUtc()).isNotNull();
     }
 }

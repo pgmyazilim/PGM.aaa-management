@@ -22,6 +22,7 @@ public class InfrastructureService {
     private final ProjectRepository projectRepository;
     private final ModuleRepository moduleRepository;
     private final ExternalUrlRepository externalUrlRepository;
+    private final ClientRepository clientRepository;
     private final DatabaseServerRepository serverRepository;
     private final DatabaseCredentialRepository credentialRepository;
     private final ModuleDatabaseRepository moduleDatabaseRepository;
@@ -101,6 +102,32 @@ public class InfrastructureService {
     @Transactional
     public void deleteExternalUrl(Integer id) {
         externalUrlRepository.deleteById(id);
+    }
+
+    // --- Clients ---
+    public Page<Client> listClients(String search, int page, int size) {
+        return clientRepository.findBySearch(search, PageRequest.of(page, size, Sort.by("name")));
+    }
+
+    public Client findClientById(Integer id) {
+        return clientRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("İstemci bulunamadı: " + id));
+    }
+
+    /**
+     * Yeni istemcide ClientKey'i DB üretir. Düzenlemede yalnızca Name/Description değişir; form nesnesi
+     * doğrudan kaydedilmez, mevcut satır yüklenip güncellenir (ClientKey/CreatedAtUtc korunur). Silme yoktur.
+     */
+    @Transactional
+    public Client saveClient(Client form) {
+        if (form.getName() == null || form.getName().isBlank()) {
+            throw new IllegalArgumentException("Ad boş olamaz.");
+        }
+        Client target = form.getClientId() == null ? form : findClientById(form.getClientId());
+        target.setName(form.getName().trim());
+        target.setDescription(form.getDescription());
+        target.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
+        return clientRepository.save(target);
     }
 
     // --- Database Servers ---
