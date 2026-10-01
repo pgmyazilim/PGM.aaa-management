@@ -139,6 +139,7 @@ class AuditTemplateRenderingTest {
 
         String outWithLog = buildEngine().process("audit/record-audit-detail",
                 realWebContext(Map.of("audit", withLog)));
+        assertThat(outWithLog).contains("PDF olarak indir").contains("window.print()");
         assertThat(outWithLog).contains("test notu");
         assertThat(outWithLog).contains("test ek bilgi");
         assertThat(outWithLog).contains("kayıt ek bilgisi");
@@ -181,6 +182,7 @@ class AuditTemplateRenderingTest {
 
         String outJson = buildEngine().process("audit/action-log-detail",
                 realWebContext(Map.of("log", withJsonExtraInfo, "activePage", "action-logs")));
+        assertThat(outJson).contains("PDF olarak indir").contains("window.print()");
         assertThat(outJson).contains("test notu");
         assertThat(outJson).contains("{&quot;foo&quot;:&quot;bar&quot;}");
         assertThat(outJson).contains("id=\"extraInfoFormatted\"");

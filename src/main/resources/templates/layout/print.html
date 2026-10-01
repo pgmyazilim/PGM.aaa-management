@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- Detay sayfalarında "PDF olarak indir": tarayıcının yazdır penceresi ("PDF olarak kaydet") açılır,
+     sayfa zaten biçimlendirilmiş hâliyle yazdırılır. -->
+<style th:fragment="styles" media="print">
+    @page { size: A4; margin: 15mm; }
+    body { background: #fff !important; }
+    nav, .no-print { display: none !important; }
+    .h-screen { height: auto !important; }
+    main { overflow: visible !important; padding: 0 !important; }
+    .shadow { box-shadow: none !important; border: 1px solid #e2e8f0; }
+    .max-w-3xl { max-width: none !important; }
+    pre { overflow: visible !important; }
+    .bg-white { break-inside: avoid; }
+</style>
+<button type="button" th:fragment="button" onclick="window.print()"
+        class="no-print ml-auto text-sm bg-slate-700 hover:bg-slate-800 text-white px-3 py-1.5 rounded">
+    PDF olarak indir
+</button>
+</body>
+</html>
