@@ -60,7 +60,6 @@ class UserServiceTest {
     void save_existingUserWithoutPassword_keepsStoredHash() {
         User existing = User.builder().userId(5).username("mevcut")
                 .passwordHash("$2a$10$eski")
-                .failedLoginCount(3)
                 .build();
         User form = User.builder().userId(5).username("mevcut").firstName("Yeni Ad").build();
         when(userRepository.existsByUsernameAndUserIdNot("mevcut", 5)).thenReturn(false);
@@ -70,7 +69,6 @@ class UserServiceTest {
         User saved = userService.save(form, null);
 
         assertThat(saved.getPasswordHash()).isEqualTo("$2a$10$eski");
-        assertThat(saved.getFailedLoginCount()).isEqualTo(3);
         assertThat(saved.getFirstName()).isEqualTo("Yeni Ad");
         verify(passwordEncoder, never()).encode(any());
     }
@@ -116,14 +114,13 @@ class UserServiceTest {
     }
 
     @Test
-    void unlock_resetsFailedCountAndLockTimestamp() {
-        User user = User.builder().userId(1).failedLoginCount(5)
+    void unlock_clearsLockTimestamp() {
+        User user = User.builder().userId(1)
                 .lockedUntilUtc(java.time.LocalDateTime.now()).build();
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
 
         userService.unlock(1);
 
-        assertThat(user.getFailedLoginCount()).isZero();
         assertThat(user.getLockedUntilUtc()).isNull();
     }
 

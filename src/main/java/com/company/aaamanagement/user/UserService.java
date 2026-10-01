@@ -116,7 +116,6 @@ public class UserService {
     @Transactional
     public void unlock(Integer id) {
         User user = findById(id);
-        user.setFailedLoginCount(0);
         user.setLockedUntilUtc(null);
         user.setModifiedAtUtc(LocalDateTime.now(ZoneOffset.UTC));
     }

@@ -97,19 +97,16 @@
                 </div>
             </form>
 
-            <div th:if="${user.userId != null and (user.lockedUntilUtc != null or user.failedLoginCount > 0)}"
+            <div th:if="${user.userId != null and user.lockedUntilUtc != null}"
                  class="bg-white rounded-lg shadow p-6 mt-6">
                 <h2 class="font-semibold text-slate-700 mb-2">Hesap Kilidi</h2>
-                <p class="text-sm text-slate-600">
-                    Başarısız giriş denemesi: <span class="font-semibold" th:text="${user.failedLoginCount}">0</span>
-                </p>
-                <p class="text-sm mt-1" th:if="${user.lockedUntilUtc != null}">
+                <p class="text-sm">
                     <span class="text-red-600 font-medium">Kilitli</span> —
                     <span th:text="${#temporals.format(@localTimeService.toLocal(user.lockedUntilUtc), 'dd.MM.yyyy HH:mm')} + ' tarihine kadar'">—</span>
                 </p>
                 <form th:action="@{/users/{id}/unlock(id=${user.userId})}" method="post" class="mt-3">
                     <button type="submit"
-                            class="bg-orange-500 text-white px-4 py-2 rounded text-sm hover:bg-orange-600">Kilidi Aç / Sayacı Sıfırla</button>
+                            class="bg-orange-500 text-white px-4 py-2 rounded text-sm hover:bg-orange-600">Kilidi Aç</button>
                 </form>
             </div>
         </div>

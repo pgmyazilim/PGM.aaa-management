@@ -47,9 +47,6 @@ public class User {
     @Column(name = "PasswordHash", length = 200)
     private String passwordHash;
 
-    @Column(name = "FailedLoginCount", nullable = false)
-    private int failedLoginCount;
-
     @Column(name = "LockedUntilUtc")
     private LocalDateTime lockedUntilUtc;
 
