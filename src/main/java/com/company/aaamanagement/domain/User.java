@@ -41,9 +41,6 @@ public class User {
     @ToString.Include
     private String username;
 
-    @Column(name = "PasswordHashLegacy", length = 64)
-    private String passwordHashLegacy;
-
     @Column(name = "PasswordHash", length = 200)
     private String passwordHash;
 
@@ -56,32 +53,17 @@ public class User {
     @Column(name = "IsSuperUser", nullable = false)
     private boolean superUser;
 
-    @Column(name = "WelcomeMessage", length = 100)
-    private String welcomeMessage;
-
     @Column(name = "LastPasswordChangeUtc")
     private LocalDateTime lastPasswordChangeUtc;
 
-    @Column(name = "LastSecretChangeUtc")
-    private LocalDateTime lastSecretChangeUtc;
-
-    @Column(name = "EmailUser", length = 128)
-    private String emailUser;
-
-    @Column(name = "EmailDomain", length = 378)
-    private String emailDomain;
-
-    @Column(name = "PhoneHome", length = 25)
-    private String phoneHome;
+    @Column(name = "Email", length = 320)
+    private String email;
 
     @Column(name = "PhoneOffice", length = 25)
     private String phoneOffice;
 
     @Column(name = "PhoneOfficeExt")
     private Integer phoneOfficeExt;
-
-    @Column(name = "PhoneFax", length = 25)
-    private String phoneFax;
 
     @Column(name = "PhoneMobile", length = 25)
     private String phoneMobile;

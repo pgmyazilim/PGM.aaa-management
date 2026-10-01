@@ -42,16 +42,13 @@ public class UserService {
     public User save(User form, String rawPassword) {
         boolean isNew = form.getUserId() == null;
         // Boş string'ler DB'deki filtrelenmiş UNIQUE indekslerin (Username,
-        // EmailUser+EmailDomain) NULL muafiyetinden yararlanamaz; null'a çevrilmezse
+        // Email) NULL muafiyetinden yararlanamaz; null'a çevrilmezse
         // iki boş kayıt "duplicate key" hatasıyla çakışır.
         if (form.getUsername() != null && form.getUsername().isBlank()) {
             form.setUsername(null);
         }
-        if (form.getEmailUser() != null && form.getEmailUser().isBlank()) {
-            form.setEmailUser(null);
-        }
-        if (form.getEmailDomain() != null && form.getEmailDomain().isBlank()) {
-            form.setEmailDomain(null);
+        if (form.getEmail() != null && form.getEmail().isBlank()) {
+            form.setEmail(null);
         }
         // Username artık şemada nullable (ör. yalnızca SSO kullanıcıları); benzersizlik
         // kontrolü sadece dolu bir kullanıcı adı verildiğinde uygulanır.
@@ -86,11 +83,9 @@ public class UserService {
         user.setMiddleName(form.getMiddleName());
         user.setLastName(form.getLastName());
         user.setUsername(form.getUsername());
-        user.setEmailUser(form.getEmailUser());
-        user.setEmailDomain(form.getEmailDomain());
+        user.setEmail(form.getEmail());
         user.setBadgeNo(form.getBadgeNo());
         user.setIdNo(form.getIdNo());
-        user.setWelcomeMessage(form.getWelcomeMessage());
         user.setActive(form.isActive());
         user.setSuperUser(form.isSuperUser());
         user.setAlwaysUseOtp(form.getAlwaysUseOtp());
@@ -98,18 +93,15 @@ public class UserService {
     }
 
     private void validateEmailUnique(User form) {
-        if (form.getEmailUser() == null || form.getEmailUser().isBlank()
-                || form.getEmailDomain() == null || form.getEmailDomain().isBlank()) {
+        if (form.getEmail() == null || form.getEmail().isBlank()) {
             return;
         }
         boolean exists = form.getUserId() == null
-                ? userRepository.existsByEmailUserIgnoreCaseAndEmailDomainIgnoreCase(
-                        form.getEmailUser(), form.getEmailDomain())
-                : userRepository.existsByEmailUserIgnoreCaseAndEmailDomainIgnoreCaseAndUserIdNot(
-                        form.getEmailUser(), form.getEmailDomain(), form.getUserId());
+                ? userRepository.existsByEmailIgnoreCase(form.getEmail())
+                : userRepository.existsByEmailIgnoreCaseAndUserIdNot(form.getEmail(), form.getUserId());
         if (exists) {
             throw new IllegalArgumentException("Bu e-posta adresi başka bir kullanıcıya kayıtlı: "
-                    + form.getEmailUser() + "@" + form.getEmailDomain());
+                    + form.getEmail());
         }
     }
 
