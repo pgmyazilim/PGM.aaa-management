@@ -116,7 +116,21 @@
             });
         }
 
+        function parseIfJson(v) {
+            if (typeof v !== 'string') return v;
+            var t = v.trim();
+            if (!t || (t[0] !== '{' && t[0] !== '[')) return v;
+            try {
+                var parsed = JSON.parse(t);
+                if (parsed && typeof parsed === 'object') return parsed;
+            } catch (e) {
+                // Gömülü metin geçerli JSON değil: düz metin olarak bırak.
+            }
+            return v;
+        }
+
         function isScalar(v) {
+            v = parseIfJson(v);
             return v === null || typeof v !== 'object';
         }
 
@@ -128,7 +142,12 @@
             return '<span class="text-slate-800">' + esc(v) + '</span>';
         }
 
+        function cell(v) {
+            return isScalar(v) ? scalar(v) : render(v);
+        }
+
         function render(value) {
+            value = parseIfJson(value);
             if (value && typeof value === 'object' && Array.isArray(value.changes)) {
                 return changesTable(value.changes);
             }
@@ -142,8 +161,8 @@
             var rows = changes.map(function (c) {
                 return '<tr class="border-t border-slate-100 align-top">' +
                     '<td class="py-1.5 pr-4 font-medium text-slate-600 whitespace-nowrap">' + esc(c.field) + '</td>' +
-                    '<td class="py-1.5 pr-4 text-rose-600 line-through">' + scalar(c.old) + '</td>' +
-                    '<td class="py-1.5 text-emerald-700">' + scalar(c.new) + '</td>' +
+                    '<td class="py-1.5 pr-4 text-rose-600 line-through">' + cell(c.old) + '</td>' +
+                    '<td class="py-1.5 text-emerald-700">' + cell(c.new) + '</td>' +
                     '</tr>';
             }).join('');
             return '<table class="w-full">' +
@@ -157,10 +176,10 @@
             if (!keys.length) return '<p class="text-slate-400">— Boş —</p>';
             var rows = keys.map(function (k) {
                 var v = obj[k];
-                var cell = isScalar(v) ? scalar(v) : '<div class="mt-1">' + render(v) + '</div>';
+                var valueCell = isScalar(v) ? scalar(v) : '<div class="mt-1">' + render(v) + '</div>';
                 return '<tr class="border-t border-slate-100 align-top">' +
                     '<td class="py-1.5 pr-4 font-medium text-slate-600 whitespace-nowrap">' + esc(k) + '</td>' +
-                    '<td class="py-1.5 w-full">' + cell + '</td>' +
+                    '<td class="py-1.5 w-full">' + valueCell + '</td>' +
                     '</tr>';
             }).join('');
             return '<table class="w-full"><tbody>' + rows + '</tbody></table>';
