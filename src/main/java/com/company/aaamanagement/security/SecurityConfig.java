@@ -17,7 +17,7 @@ import java.security.MessageDigest;
 
 /**
  * Tek kullanıcılı (env'den gelen) form girişi. Oturum sunucu tarafında HttpSession'da tutulur;
- * DB/Redis yoktur. /login dışındaki her istek kimlik doğrulaması ister, CSRF koruması açıktır.
+ * DB/Redis yoktur. /login ve /favicon.svg dışındaki her istek kimlik doğrulaması ister, CSRF koruması açıktır.
  */
 @Configuration
 public class SecurityConfig {
@@ -26,7 +26,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/login", "/favicon.svg").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/login")
